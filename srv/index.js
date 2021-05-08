@@ -3,6 +3,8 @@ import express from 'express';
 
 export default (app, http) => {
   app.use(express.json());
+  app.use(express.static('public'));
+
 
   app.get('/foo', (req, res) => {
     res.json({ msg: 'foo' });
