@@ -10,9 +10,10 @@ const puppeteer = require('puppeteer');
 
   try {
     await page.goto('http://localhost:3000/');
-    await page.screenshot({ path: '../public/dashboard.png' });
+    await page.screenshot({ path: 'public/dashboard.png' });
   } catch (err) {
     // エラーが起きた際の処理
+    console.error(err);
   } finally {
     await browser.close();
   }
