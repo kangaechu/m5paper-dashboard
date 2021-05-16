@@ -17,8 +17,9 @@ export default defineComponent({
 </script>
 
 <style>
-* {
+html {
   font-family: "Helvetica Neue", "Helvetica", "Hiragino Sans",
     "Hiragino Kaku Gothic ProN", "Arial", "Yu Gothic", "Meiryo", sans-serif;
+  font-size: 1.5em;
 }
 </style>

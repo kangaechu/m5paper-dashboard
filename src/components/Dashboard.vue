@@ -1,37 +1,25 @@
 <template>
   <div class="dashboard">
-    <ItemWithIcon
-      :icon="firstItem.icon"
-      :title="firstItem.title"
-      :value="firstItem.value"
-    >
-    </ItemWithIcon>
-    <ItemWithIcon
-      :icon="secondItem.icon"
-      :title="secondItem.title"
-      :value="secondItem.value"
-    >
-    </ItemWithIcon>
+    <ItemThermostat :value="firstItem.value"> </ItemThermostat>
+    <ItemHumidity :value="secondItem.value"> </ItemHumidity>
   </div>
 </template>
   
 <script lang="ts">
-import ItemWithIcon from "./ItemWithIcon.vue";
+import ItemThermostat from "./ItemThermostat.vue";
+import ItemHumidity from "./ItemHumidity.vue";
 export default {
   components: {
-    ItemWithIcon,
+    ItemThermostat,
+    ItemHumidity,
   },
   data() {
     return {
       firstItem: {
-        icon: "🌡",
-        title: "気温",
-        value: "25.3℃",
+        value: "25.3",
       },
       secondItem: {
-        icon: "🌡",
-        title: "気温",
-        value: "25.3℃",
+        value: "82",
       },
     };
   },
@@ -39,5 +27,8 @@ export default {
 </script>
  
 <style scoped>
+.dashboard {
+  display: flex;
+}
 </style>
   
