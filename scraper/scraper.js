@@ -1,7 +1,11 @@
 const puppeteer = require('puppeteer');
 
 (async () => {
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({
+    defaultViewport: {
+      width: 960, height: 540
+    }
+  });
   const page = await browser.newPage();
 
   try {
