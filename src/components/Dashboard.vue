@@ -1,35 +1,43 @@
 <template>
-  <div class="dashboard">{{ currentDate }}</div>
+  <div class="dashboard">
+    <ItemWithIcon
+      :icon="firstItem.icon"
+      :title="firstItem.title"
+      :value="firstItem.value"
+    >
+    </ItemWithIcon>
+    <ItemWithIcon
+      :icon="secondItem.icon"
+      :title="secondItem.title"
+      :value="secondItem.value"
+    >
+    </ItemWithIcon>
+  </div>
 </template>
   
-  <script lang="ts">
-import { ref, defineComponent } from "vue";
-export default defineComponent({
-  name: "Dashboard",
-  computed: {
-    currentDate() {
-      const d = new Date();
-      return (
-        d.getFullYear() +
-        "/" +
-        (d.getMonth() + 1) +
-        "/" +
-        d.getDate() +
-        " " +
-        d.getHours() +
-        ":" +
-        d.getMinutes() +
-        ":" +
-        d.getSeconds()
-      );
-    },
+<script lang="ts">
+import ItemWithIcon from "./ItemWithIcon.vue";
+export default {
+  components: {
+    ItemWithIcon,
   },
-});
+  data() {
+    return {
+      firstItem: {
+        icon: "🌡",
+        title: "気温",
+        value: "25.3℃",
+      },
+      secondItem: {
+        icon: "🌡",
+        title: "気温",
+        value: "25.3℃",
+      },
+    };
+  },
+};
 </script>
  
 <style scoped>
-div.dashboard {
-  font-size: 10em;
-}
 </style>
   
