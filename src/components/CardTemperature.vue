@@ -27,7 +27,7 @@
     <span class="unit">℃</span>
   </div>
 </template>
-  
+
 <script lang="ts">
 export default {
   props: {
@@ -46,12 +46,12 @@ export default {
   },
 };
 </script>
- 
+
 <style scoped>
 div.item {
   text-align: center;
   padding: 0.5em 1em;
-  margin: 1em 0;
+  margin: 0 0 1em 0;
   background: white;
 }
 span.title {
@@ -61,4 +61,3 @@ span.value {
   font-size: 2.5rem;
 }
 </style>
-  

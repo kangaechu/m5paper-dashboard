@@ -20,6 +20,6 @@ export default defineComponent({
 html {
   font-family: "Helvetica Neue", "Helvetica", "Hiragino Sans",
     "Hiragino Kaku Gothic ProN", "Arial", "Yu Gothic", "Meiryo", sans-serif;
-  font-size: 1.5em;
+  font-size: 1.2em;
 }
 </style>

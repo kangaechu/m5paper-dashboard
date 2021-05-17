@@ -1,14 +1,8 @@
 <template>
   <div class="item">
     <span>
-      <!--?xml version="1.0" encoding="utf-8"?-->
-      <!-- Generator: Adobe Illustrator 15.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-
       <svg
-        id="_x32_"
         xmlns="http://www.w3.org/2000/svg"
-        x="0px"
-        y="0px"
         width="40"
         height="40"
         viewBox="0 0 512 512"
@@ -60,7 +54,7 @@ export default {
 div.item {
   text-align: center;
   padding: 0.5em 1em;
-  margin: 1em 0;
+  margin: 0 0 1em 0;
   background: white;
 }
 span.title {
