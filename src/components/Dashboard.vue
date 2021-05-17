@@ -1,17 +1,17 @@
 <template>
   <div class="dashboard">
-    <ItemThermostat :value="firstItem.value"> </ItemThermostat>
-    <ItemHumidity :value="secondItem.value"> </ItemHumidity>
+    <CardTemperature :value="firstItem.value"> </CardTemperature>
+    <CardHumidity :value="secondItem.value"> </CardHumidity>
   </div>
 </template>
-  
+
 <script lang="ts">
-import ItemThermostat from "./ItemThermostat.vue";
-import ItemHumidity from "./ItemHumidity.vue";
+import CardTemperature from "./CardTemperature.vue";
+import CardHumidity from "./CardHumidity.vue";
 export default {
   components: {
-    ItemThermostat,
-    ItemHumidity,
+    CardTemperature,
+    CardHumidity,
   },
   data() {
     return {
@@ -25,10 +25,9 @@ export default {
   },
 };
 </script>
- 
+
 <style scoped>
 .dashboard {
   display: flex;
 }
 </style>
-  
