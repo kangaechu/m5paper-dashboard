@@ -5,10 +5,8 @@
       <!-- Generator: Adobe Illustrator 15.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
 
       <svg
-        version="1.1"
         id="_x32_"
         xmlns="http://www.w3.org/2000/svg"
-        xmlns:xlink="http://www.w3.org/1999/xlink"
         x="0px"
         y="0px"
         width="40"
@@ -38,7 +36,7 @@
     <span class="unit">%</span>
   </div>
 </template>
-  
+
 <script lang="ts">
 export default {
   props: {
@@ -57,7 +55,7 @@ export default {
   },
 };
 </script>
- 
+
 <style scoped>
 div.item {
   text-align: center;
@@ -72,4 +70,3 @@ span.value {
   font-size: 2.5rem;
 }
 </style>
-  
