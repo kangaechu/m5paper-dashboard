@@ -1,6 +1,7 @@
 <template>
   <UpdatedAt></UpdatedAt>
   <div class="dashboard">
+    <CardWeather> </CardWeather>
     <CardTemperature :value="firstItem.value"> </CardTemperature>
     <CardHumidity :value="secondItem.value"> </CardHumidity>
   </div>
@@ -8,11 +9,13 @@
 
 <script lang="ts">
 import UpdatedAt from "./UpdatedAt.vue";
+import CardWeather from "./CardWeather.vue";
 import CardTemperature from "./CardTemperature.vue";
 import CardHumidity from "./CardHumidity.vue";
 export default {
   components: {
     UpdatedAt,
+    CardWeather,
     CardTemperature,
     CardHumidity,
   },
