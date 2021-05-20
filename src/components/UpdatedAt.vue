@@ -10,7 +10,7 @@ export default {
     updatedAt: function (){
       const today = new Date();
       return today.getFullYear() + "/" + (today.getMonth() + 1) + "/" + today.getDay() + " "
-        + today.getHours() + ":" + today.getMinutes();
+        + today.getHours() + ":" + ("0" + today.getMinutes()).slice(-2);
     }
   }
 };
