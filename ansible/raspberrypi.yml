@@ -1,0 +1,43 @@
+- hosts: m5paper
+  become: yes
+  tasks:
+    - name: create m5paper group
+      ansible.builtin.group:
+        name: m5paper
+
+    - name: create m5paper user
+      ansible.builtin.user:
+        name: m5paper
+        comment: m5paper
+        group: m5paper
+
+    - name: install prerequired tools
+      ansible.builtin.apt:
+        pkg:
+          - nodejs
+
+    - name: git clone
+      ansible.builtin.git:
+        repo: https://github.com/kangaechu/m5paper-dashboard.git
+        dest: /home/m5paper/repos/github.com/kangaechu/m5paper-dashboard
+
+    - name: npm install
+      ansible.builtin.shell:
+        cmd: npm install
+        chdir: /home/m5paper/repos/github.com/kangaechu/m5paper-dashboard
+
+    - name: npm install
+      ansible.builtin.shell:
+        cmd: npm install
+        chdir: /home/m5paper/repos/github.com/kangaechu/m5paper-dashboard
+
+    - name: install myservice systemd unit file
+      ansible.builtin.copy:
+        src: m5paper.service
+        dest: /etc/systemd/system/m5paper.service
+
+    - name: start m5paper
+      ansible.builtin.systemd:
+        state: started
+        name: m5paper
+        daemon_reload: yes

@@ -1,0 +1,11 @@
+[Service]
+Type=simple
+ExecStart=npm run express
+WorkingDirectory=/home/m5paper/repos/github.com/kangaechu/m5paper-dashboard
+KillMode=process
+Restart=always
+User=m5paper
+Group=m5paper
+
+[Install]
+WantedBy=multi-user.target
