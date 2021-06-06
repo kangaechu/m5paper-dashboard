@@ -48,3 +48,8 @@
         state: started
         name: m5paper
         daemon_reload: yes
+
+    - name: npm install scraper
+      ansible.builtin.shell:
+        cmd: npm install
+        chdir: /home/m5paper/repos/github.com/kangaechu/m5paper-dashboard/scraper
