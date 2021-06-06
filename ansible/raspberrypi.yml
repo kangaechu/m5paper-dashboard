@@ -26,10 +26,17 @@
         cmd: npm install
         chdir: /home/m5paper/repos/github.com/kangaechu/m5paper-dashboard
 
-    - name: npm install
+    - name: npm run build
       ansible.builtin.shell:
-        cmd: npm install
+        cmd: npm run build
         chdir: /home/m5paper/repos/github.com/kangaechu/m5paper-dashboard
+
+    - name: chown
+      ansible.builtin.file:
+        path: /home/m5paper/repos/github.com/kangaechu/m5paper-dashboard
+        owner: m5paper
+        group: m5paper
+        recurse: yes
 
     - name: install myservice systemd unit file
       ansible.builtin.copy:

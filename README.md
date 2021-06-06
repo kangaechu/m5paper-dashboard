@@ -25,3 +25,12 @@ Run `Volar: Switch TS Plugin on/off` from VSCode command palette.
 3. Open `src/main.ts` in VSCode
 4. Open the VSCode command palette
 5. Search and run "Select TypeScript version" -> "Use workspace version"
+
+### Deploy to Raspberry pi
+
+Use ansible.
+
+```shell
+cd ansible
+ansible-playbook -i inventory raspberrypi.yml
+```
