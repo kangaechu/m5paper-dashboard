@@ -1,34 +1,33 @@
-# Vue 3 + Typescript + Vite
+# m5paper-dashboard-vue
 
-This template should help get you started developing with Vue 3 and Typescript in Vite.
+M5Paperをダッシュボード用の表示デバイスとして使用するNode.jsのアプリです。
 
-## Recommended IDE Setup
+# Demo
 
-[VSCode](https://code.visualstudio.com/) + [Vetur](https://marketplace.visualstudio.com/items?itemName=octref.vetur). Make sure to enable `vetur.experimental.templateInterpolationService` in settings!
+![DEMO](https://user-images.githubusercontent.com/989985/120999952-a7f06880-c7c4-11eb-82a8-f775fb6a5798.jpg)
 
-### If Using `<script setup>`
+[M5Paper](https://github.com/m5stack/M5EPD)はESP32を内蔵し、解像度540 x 960 4.7インチの電子ペーパーを搭載したデバイスです。
+バッテリーを内蔵しているので、どこにでも取り付けができ、長時間稼働することができます。
 
-[`<script setup>`](https://github.com/vuejs/rfcs/pull/227) is a feature that is currently in RFC stage. To get proper IDE support for the syntax, use [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar) instead of Vetur (and disable Vetur).
+M5Paperに天気や温度・湿度・ニュース・今日の予定などを表示し、それをリビングやキッチンの壁に貼り付けることによって情報端末として使用することを目的としています。
 
-## Type Support For `.vue` Imports in TS
+# 構成
 
-Since TypeScript cannot handle type information for `.vue` imports, they are shimmed to be a generic Vue component type by default. In most cases this is fine if you don't really care about component prop types outside of templates. However, if you wish to get actual prop types in `.vue` imports (for example to get props validation when using manual `h(...)` calls), you can use the following:
+![m5paper-dashboard-vue](https://user-images.githubusercontent.com/989985/121002160-028ac400-c7c7-11eb-8459-ced520afae4a.png)
 
-### If Using Volar
+ServerはWebサーバとして稼働します。自分自身やバックエンドのAPIを使用し、ダッシュボードに表示する情報を保持します。フロントエンドはVue.js、バックエンドはExpressで動いています。
+ScraperはHeadless browserです。ServerにHTTPでアクセスし、取得したHTMLをレンダリングし、540 x 960のサイズで保存したスクリーンショットをServerの `/public/dashboard.png` に保存します。これは定期的に実行します。
+M5Paperは定期的にServerにアクセスし、スクリーンショットを取得して表示します。
+それ以外の時間はSleepします。
 
-Run `Volar: Switch TS Plugin on/off` from VSCode command palette.
+# Requirement
 
-### If Using Vetur
+- Raspberry Pi
+- Ansible
 
-1. Install and add `@vuedx/typescript-plugin-vue` to the [plugins section](https://www.typescriptlang.org/tsconfig#plugins) in `tsconfig.json`
-2. Delete `src/shims-vue.d.ts` as it is no longer needed to provide module info to Typescript
-3. Open `src/main.ts` in VSCode
-4. Open the VSCode command palette
-5. Search and run "Select TypeScript version" -> "Use workspace version"
+# Installation
 
-### Deploy to Raspberry pi
-
-Use ansible.
+Ansibleを使用します。
 
 ```shell
 cd ansible
