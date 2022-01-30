@@ -10,7 +10,8 @@
 </template>
 
 <script lang="ts">
-export default {
+import { defineComponent } from 'vue'
+export default defineComponent({
   data() {
     return {
       weather: '晴れ一時雨',
@@ -22,7 +23,7 @@ export default {
   },
   computed: {
   }
-};
+});
 </script>
 
 <style scoped>
