@@ -9,6 +9,6 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "puppeteer-core": "^10.0.0"
+    "puppeteer-core": "^13.1.2"
   }
 }
