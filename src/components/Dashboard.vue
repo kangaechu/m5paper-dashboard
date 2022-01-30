@@ -12,7 +12,9 @@ import UpdatedAt from "./UpdatedAt.vue";
 import CardWeather from "./CardWeather.vue";
 import CardTemperature from "./CardTemperature.vue";
 import CardHumidity from "./CardHumidity.vue";
-export default {
+import { defineComponent } from 'vue'
+
+export default defineComponent({
   components: {
     UpdatedAt,
     CardWeather,
@@ -29,7 +31,7 @@ export default {
       },
     };
   },
-};
+});
 </script>
 
 <style scoped>

@@ -5,7 +5,8 @@
 </template>
 
 <script lang="ts">
-export default {
+import { defineComponent } from 'vue'
+export default defineComponent ({
   computed: {
     updatedAt: function (){
       const today = new Date();
@@ -13,7 +14,7 @@ export default {
         + today.getHours() + ":" + ("0" + today.getMinutes()).slice(-2);
     }
   }
-};
+});
 </script>
 
 <style scoped>
