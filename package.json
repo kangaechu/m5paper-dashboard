@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@vue/cli-service": "^5.0.4",
-    "vue": "^3.2.34"
+    "vue": "^3.2.36"
   },
   "devDependencies": {
     "@babel/types": "^7.18.0",
