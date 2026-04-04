@@ -117,17 +117,24 @@ func drawSeparator(dc *gg.Context, y float64) {
 	dc.Stroke()
 }
 
-func toGrayscale(src image.Image) *image.Gray {
+// toGrayscale converts src to a grayscale image stored as NRGBA.
+// Using NRGBA (not image.Gray) so jpeg.Encode produces RGB JPEG,
+// which is required by M5EPD's TJpgDec decoder.
+func toGrayscale(src image.Image) *image.NRGBA {
 	bounds := src.Bounds()
-	gray := image.NewGray(bounds)
+	dst := image.NewNRGBA(bounds)
 	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
 		for x := bounds.Min.X; x < bounds.Max.X; x++ {
 			r, g, b, _ := src.At(x, y).RGBA()
 			lum := uint8((19595*r + 38470*g + 7471*b + 1<<15) >> 24)
 			// Quantize to 4-bit (16 shades) for e-ink
 			lum = (lum / 17) * 17
-			gray.SetGray(x, y, color.Gray{Y: lum})
+			i := dst.PixOffset(x, y)
+			dst.Pix[i+0] = lum
+			dst.Pix[i+1] = lum
+			dst.Pix[i+2] = lum
+			dst.Pix[i+3] = 0xFF
 		}
 	}
-	return gray
+	return dst
 }
