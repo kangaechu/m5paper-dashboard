@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: m5paper-dashboard
-  namespace: m5paper-dashboard
+  namespace: default
 data:
   DAM_CACHE_FILE: "/data/dam_history.json"
   TZ: "Asia/Tokyo"
