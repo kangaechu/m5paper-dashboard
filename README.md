@@ -50,7 +50,7 @@ GOOGLE_CREDENTIALS_JSON=$(base64 < service-account.json)
 
 ```shell
 make run
-# output.png が生成される
+# output.jpg が生成される
 ```
 
 ### 4. Lambda デプロイ

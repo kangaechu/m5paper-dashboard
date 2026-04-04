@@ -5,7 +5,7 @@ M5Paper用ファームウェア。CloudFront/S3からダッシュボード画像
 ## 動作
 
 1. WiFi接続
-2. 画像URL (PNG) をHTTP GETで取得
+2. 画像URL (JPEG) をHTTP GETで取得
 3. E-Inkディスプレイに表示
 4. ディープスリープ（デフォルト60分）
 5. 1に戻る
@@ -33,7 +33,7 @@ cp include/config.h.sample include/config.h
 ```cpp
 #define WIFI_SSID     "YOUR_WIFI_SSID"
 #define WIFI_PASSWORD "YOUR_WIFI_PASSWORD"
-#define IMAGE_URL     "https://your-cloudfront-domain.cloudfront.net/your-key/dashboard.png"
+#define IMAGE_URL     "https://your-cloudfront-domain.cloudfront.net/your-key/dashboard.jpg"
 #define SLEEP_MINUTES 60
 ```
 

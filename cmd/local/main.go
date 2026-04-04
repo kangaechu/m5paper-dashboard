@@ -19,7 +19,7 @@ import (
 func main() {
 	loadEnvFile(".env")
 
-	output := flag.String("output", "output.jpg", "output PNG file path")
+	output := flag.String("output", "output.jpg", "output JPEG file path")
 	locationCode := flag.String("location", envOrDefault("LOCATION_CODE", "130000"), "JMA location code")
 	lat := flag.String("lat", envOrDefault("LOCATION_LAT", "35.6895"), "latitude for hourly weather")
 	lon := flag.String("lon", envOrDefault("LOCATION_LON", "139.6917"), "longitude for hourly weather")
