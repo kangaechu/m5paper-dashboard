@@ -7,6 +7,7 @@ M5EPD_Canvas canvas(&M5.EPD);
 
 bool connectWiFi();
 bool fetchAndDisplay();
+void drawBatteryBar();
 void goToSleep();
 
 void setup() {
@@ -89,12 +90,24 @@ bool fetchAndDisplay() {
 
     canvas.createCanvas(540, 960);
     canvas.drawJpg(buf, bytesRead, 0, 0);
+    drawBatteryBar();
     canvas.pushCanvas(0, 0, UPDATE_MODE_GC16);
 
     free(buf);
 
     Serial.println("Dashboard displayed");
     return true;
+}
+
+void drawBatteryBar() {
+    uint32_t voltage = M5.getBatteryVoltage();
+    int percent = (voltage - 3200) * 100 / (4200 - 3200);
+    if (percent < 0) percent = 0;
+    if (percent > 100) percent = 100;
+
+    int barWidth = 540 * percent / 100;
+    canvas.fillRect(0, 0, barWidth, 1, 0);  // black
+    Serial.printf("Battery: %dmV (%d%%)\n", voltage, percent);
 }
 
 void goToSleep() {
