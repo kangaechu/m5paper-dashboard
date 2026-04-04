@@ -2,7 +2,7 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: m5paper-dashboard
-  namespace: m5paper-dashboard
+  namespace: default
 spec:
   schedule: "*/10 * * * *"  # every 10 minutes
   concurrencyPolicy: Replace
