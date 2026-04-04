@@ -10,7 +10,7 @@ const char* WIFI_PASSWORD = "YOUR_WIFI_PASSWORD";
 const char* IMAGE_URL = "https://your-cloudfront-domain.cloudfront.net/your-key/dashboard.png";
 
 // Sleep interval in minutes
-const int SLEEP_MINUTES = 10;
+const int SLEEP_MINUTES = 60;
 
 // Display
 M5EPD_Canvas canvas(&M5.EPD);
