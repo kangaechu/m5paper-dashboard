@@ -95,7 +95,7 @@ func wmoForCode(code string) int {
 }
 
 // Fetch retrieves weather data from JMA API.
-func Fetch(locationCode string, now time.Time) (*render.WeatherData, error) {
+func Fetch(locationCode string) (*render.WeatherData, error) {
 	url := fmt.Sprintf(forecastURL, locationCode)
 	resp, err := http.Get(url) //nolint:gosec // URL is constructed from a constant format string
 	if err != nil {

@@ -34,7 +34,7 @@ func main() {
 	data := render.DashboardData{Now: now}
 
 	// Fetch weather (daily from JMA)
-	w, err := weather.Fetch(*locationCode, now)
+	w, err := weather.Fetch(*locationCode)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "weather error: %v\n", err)
 	} else {

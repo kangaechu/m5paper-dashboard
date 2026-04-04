@@ -27,7 +27,7 @@ func handler(ctx context.Context) error {
 	lon := envOrDefault("LOCATION_LON", "139.6917")
 
 	// Fetch weather
-	w, err := weather.Fetch(locationCode, now)
+	w, err := weather.Fetch(locationCode)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "weather error: %v\n", err)
 	} else {
