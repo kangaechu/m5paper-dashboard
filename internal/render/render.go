@@ -12,58 +12,39 @@ import (
 	"github.com/kangaechu/m5paper-dashboard/fonts"
 )
 
-// DashboardData holds all data needed to render the dashboard.
-type DashboardData struct {
-	Now     time.Time
-	Weather *WeatherData
-	Trains  []TrainInfo
-	Events  []CalendarEvent
+// DamDashboardData holds all data needed to render the dam dashboard.
+type DamDashboardData struct {
+	Now           time.Time
+	Dam           *DamData
+	YearlyHistory map[string][]DailyStorageRate // key: "2026", "2025", ...
 }
 
-// WeatherData holds weather information.
-type WeatherData struct {
-	Description  string
-	Temperature  float64
-	Humidity     int
-	PrecipChance int
-	WeatherCode  int
-	Forecasts    []DayForecast
-	Hourly       []HourlyWeather
+// DamData holds current dam observation data.
+type DamData struct {
+	Name             string
+	ObservedAt       time.Time
+	WaterLevel       float64 // 貯水位 (EL.m)
+	EffectiveStorage float64 // 有効貯水量 (×10³m³)
+	StorageRate      float64 // 貯水率 (%)
+	Inflow           float64 // 流入量 (m³/s)
+	Outflow          float64 // 放流量 (m³/s)
+	Rainfall         float64 // ダム地点雨量 (mm/h)
+	History          []DamObservation
 }
 
-// DayForecast holds a single day's forecast.
-type DayForecast struct {
-	DayLabel     string
-	Description  string
-	WeatherCode  int
-	TempMax      float64
-	TempMin      float64
-	PrecipChance int
+// DamObservation holds one hourly observation.
+type DamObservation struct {
+	Time             time.Time
+	WaterLevel       float64
+	EffectiveStorage float64
+	Inflow           float64
+	Outflow          float64
 }
 
-// HourlyWeather holds one hour's weather data.
-type HourlyWeather struct {
-	Hour          int
-	Temperature   float64
-	WeatherCode   int
-	PrecipProb    int
-	WindSpeed     float64 // m/s
-	WindDirection int     // degrees (0=N, 90=E, 180=S, 270=W)
-}
-
-// TrainInfo holds train delay information.
-type TrainInfo struct {
-	LineName string
-	Status   string
-	IsDelay  bool
-}
-
-// CalendarEvent holds a single calendar event.
-type CalendarEvent struct {
-	Summary   string
-	StartTime time.Time
-	EndTime   time.Time
-	IsAllDay  bool
+// DailyStorageRate holds one day's storage rate for the yearly chart.
+type DailyStorageRate struct {
+	Date        string  `json:"date"`         // "2026-01-15"
+	StorageRate float64 `json:"storage_rate"` // percentage
 }
 
 var (
@@ -104,27 +85,27 @@ func fontFace(f *truetype.Font, size float64) font.Face {
 	})
 }
 
-// Dashboard generates the dashboard image.
-func Dashboard(data DashboardData) (image.Image, error) {
+// Dashboard generates the dam dashboard image.
+func Dashboard(data DamDashboardData) (image.Image, error) {
 	dc := gg.NewContext(Width, Height)
 
 	// White background
 	dc.SetColor(color.White)
 	dc.Clear()
 
-	drawHeader(dc, data.Now)
-	drawSeparator(dc, float64(weatherY))
+	drawDamHeader(dc, data.Now, data.Dam)
+	drawSeparator(dc, float64(mainY))
 
-	if data.Weather != nil {
-		drawWeather(dc, data.Weather)
-		drawHourly(dc, data.Weather.Hourly)
+	if data.Dam != nil {
+		drawStorageRate(dc, data.Dam)
+		drawHourlyDelta(dc, data.Dam.History)
+		drawDamFooter(dc, data.Dam)
 	}
-	drawSeparator(dc, float64(trainY))
 
-	drawTrainInfo(dc, data.Trains)
-	drawSeparator(dc, float64(scheduleY))
+	drawYearlyChart(dc, data.Now, data.YearlyHistory)
 
-	drawSchedule(dc, data.Now, data.Events)
+	drawSeparator(dc, float64(hourlyDeltaY))
+	drawSeparator(dc, float64(footerY))
 
 	return toGrayscale(dc.Image()), nil
 }
