@@ -1,19 +1,13 @@
 #include <M5EPD.h>
 #include <WiFi.h>
 #include <HTTPClient.h>
+#include "config.h"
 
-// WiFi settings
-const char* WIFI_SSID     = "YOUR_WIFI_SSID";
-const char* WIFI_PASSWORD = "YOUR_WIFI_PASSWORD";
-
-// Dashboard image URL (CloudFront or S3 presigned URL)
-const char* IMAGE_URL = "https://your-cloudfront-domain.cloudfront.net/your-key/dashboard.png";
-
-// Sleep interval in minutes
-const int SLEEP_MINUTES = 60;
-
-// Display
 M5EPD_Canvas canvas(&M5.EPD);
+
+bool connectWiFi();
+bool fetchAndDisplay();
+void goToSleep();
 
 void setup() {
     M5.begin();
@@ -21,26 +15,22 @@ void setup() {
     M5.EPD.Clear(true);
     M5.RTC.begin();
 
-    // Connect to WiFi
     if (!connectWiFi()) {
         Serial.println("WiFi connection failed, going to sleep");
         goToSleep();
         return;
     }
 
-    // Fetch and display dashboard image
     if (!fetchAndDisplay()) {
         Serial.println("Failed to fetch dashboard image");
     }
 
-    // Disconnect WiFi and go to sleep
     WiFi.disconnect(true);
     WiFi.mode(WIFI_OFF);
     goToSleep();
 }
 
 void loop() {
-    // Not reached - device sleeps after setup
 }
 
 bool connectWiFi() {
@@ -77,9 +67,8 @@ bool fetchAndDisplay() {
     int contentLength = http.getSize();
     Serial.printf("Image size: %d bytes\n", contentLength);
 
-    // Allocate buffer for PNG data
     WiFiClient* stream = http.getStreamPtr();
-    uint8_t* buf = (uint8_t*)malloc(contentLength);
+    uint8_t* buf = (uint8_t*)ps_malloc(contentLength);
     if (!buf) {
         Serial.println("Failed to allocate memory");
         http.end();
@@ -98,7 +87,6 @@ bool fetchAndDisplay() {
 
     Serial.printf("Downloaded %d bytes\n", bytesRead);
 
-    // Draw PNG to canvas
     canvas.createCanvas(540, 960);
     canvas.drawPng(buf, bytesRead, 0, 0);
     canvas.pushCanvas(0, 0, UPDATE_MODE_GC16);

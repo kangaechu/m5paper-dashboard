@@ -1,0 +1,11 @@
+#pragma once
+
+// WiFi settings
+#define WIFI_SSID     "YOUR_WIFI_SSID"
+#define WIFI_PASSWORD "YOUR_WIFI_PASSWORD"
+
+// Dashboard image URL (CloudFront or S3)
+#define IMAGE_URL     "https://your-cloudfront-domain.cloudfront.net/your-key/dashboard.png"
+
+// Sleep interval in minutes
+#define SLEEP_MINUTES 60
