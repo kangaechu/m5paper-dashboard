@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: m5paper-nginx
+  namespace: m5paper-dashboard
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: m5paper-nginx
+  template:
+    metadata:
+      labels:
+        app: m5paper-nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:alpine
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: data
+              mountPath: /usr/share/nginx/html
+              readOnly: true
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: m5paper-dashboard
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: m5paper-nginx
+  namespace: m5paper-dashboard
+spec:
+  type: NodePort
+  selector:
+    app: m5paper-nginx
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30080

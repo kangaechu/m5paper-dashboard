@@ -1,7 +1,7 @@
-node_modules
+output.jpg
+bootstrap
+function.zip
 .DS_Store
-dist
-dist-ssr
-*.local
-
-public/dashboard.png
+.env
+firmware/.pio/
+firmware/include/config.h
