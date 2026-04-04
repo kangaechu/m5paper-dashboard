@@ -120,10 +120,10 @@ func drawYearlyChart(dc *gg.Context, now time.Time, history map[string][]DailySt
 	// Line styles per year: current=solid thick, previous years=dashed/dotted
 	// dashPatterns[0]=oldest in the 4-year window
 	dashPatterns := [][]float64{
-		{2, 4},  // dotted (3 years ago)
-		{6, 4},  // short dash (2 years ago)
-		nil,     // solid (last year)
-		nil,     // solid (current year)
+		{2, 4}, // dotted (3 years ago)
+		{6, 4}, // short dash (2 years ago)
+		nil,    // solid (last year)
+		nil,    // solid (current year)
 	}
 
 	for i, yearKey := range years {
@@ -209,8 +209,8 @@ func drawDashedLine(dc *gg.Context, points []pt, pattern []float64) {
 		return
 	}
 
-	drawing := true    // true=pen down, false=pen up
-	patIdx := 0        // index into pattern
+	drawing := true         // true=pen down, false=pen up
+	patIdx := 0             // index into pattern
 	remaining := pattern[0] // remaining length in current segment
 
 	dc.MoveTo(points[0].x, points[0].y)
