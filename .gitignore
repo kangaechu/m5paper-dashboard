@@ -1,7 +1,5 @@
-node_modules
+output.png
+bootstrap
+function.zip
 .DS_Store
-dist
-dist-ssr
-*.local
-
-public/dashboard.png
+.env
