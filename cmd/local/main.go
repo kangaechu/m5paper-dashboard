@@ -5,7 +5,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"image/png"
+	"image/jpeg"
 	"os"
 	"strings"
 	"time"
@@ -19,7 +19,7 @@ import (
 func main() {
 	loadEnvFile(".env")
 
-	output := flag.String("output", "output.png", "output PNG file path")
+	output := flag.String("output", "output.jpg", "output PNG file path")
 	locationCode := flag.String("location", envOrDefault("LOCATION_CODE", "130000"), "JMA location code")
 	lat := flag.String("lat", envOrDefault("LOCATION_LAT", "35.6895"), "latitude for hourly weather")
 	lon := flag.String("lon", envOrDefault("LOCATION_LON", "139.6917"), "longitude for hourly weather")
@@ -92,7 +92,7 @@ func main() {
 	}
 	defer f.Close()
 
-	if err := png.Encode(f, img); err != nil {
+	if err := jpeg.Encode(f, img, &jpeg.Options{Quality: 90}); err != nil {
 		fmt.Fprintf(os.Stderr, "encode error: %v\n", err)
 		os.Exit(1)
 	}

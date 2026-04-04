@@ -88,7 +88,7 @@ bool fetchAndDisplay() {
     Serial.printf("Downloaded %d bytes\n", bytesRead);
 
     canvas.createCanvas(540, 960);
-    canvas.drawPng(buf, bytesRead, 0, 0);
+    canvas.drawJpg(buf, bytesRead, 0, 0);
     canvas.pushCanvas(0, 0, UPDATE_MODE_GC16);
 
     free(buf);

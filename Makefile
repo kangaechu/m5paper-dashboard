@@ -1,7 +1,7 @@
 .PHONY: run build-lambda deploy test clean
 
 run:
-	go run ./cmd/local --output output.png
+	go run ./cmd/local --output output.jpg
 
 build-lambda:
 	GOOS=linux GOARCH=arm64 go build -ldflags="-s -w" -o bootstrap ./cmd/lambda
@@ -13,4 +13,4 @@ test:
 	go test ./...
 
 clean:
-	rm -f output.png bootstrap function.zip
+	rm -f output.jpg bootstrap function.zip

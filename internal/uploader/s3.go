@@ -5,18 +5,18 @@ import (
 	"context"
 	"fmt"
 	"image"
-	"image/png"
+	"image/jpeg"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
-// Upload encodes the image as PNG and uploads it to S3.
+// Upload encodes the image as JPEG and uploads it to S3.
 func Upload(ctx context.Context, bucket, key string, img image.Image) error {
 	var buf bytes.Buffer
-	if err := png.Encode(&buf, img); err != nil {
-		return fmt.Errorf("encode png: %w", err)
+	if err := jpeg.Encode(&buf, img, &jpeg.Options{Quality: 90}); err != nil {
+		return fmt.Errorf("encode jpeg: %w", err)
 	}
 
 	cfg, err := config.LoadDefaultConfig(ctx)
@@ -29,7 +29,7 @@ func Upload(ctx context.Context, bucket, key string, img image.Image) error {
 		Bucket:       aws.String(bucket),
 		Key:          aws.String(key),
 		Body:         bytes.NewReader(buf.Bytes()),
-		ContentType:  aws.String("image/png"),
+		ContentType:  aws.String("image/jpeg"),
 		CacheControl: aws.String("max-age=300"),
 	})
 	if err != nil {
