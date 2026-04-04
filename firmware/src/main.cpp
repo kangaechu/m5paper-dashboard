@@ -12,7 +12,7 @@ void goToSleep();
 
 void setup() {
     M5.begin();
-    M5.EPD.SetRotation(0);
+    M5.EPD.SetRotation(90);
     M5.EPD.Clear(true);
     M5.RTC.begin();
 
@@ -88,7 +88,7 @@ bool fetchAndDisplay() {
 
     Serial.printf("Downloaded %d bytes\n", bytesRead);
 
-    canvas.createCanvas(540, 960);
+    canvas.createCanvas(960, 540);
     canvas.drawJpg(buf, bytesRead, 0, 0);
     drawBatteryBar();
     canvas.pushCanvas(0, 0, UPDATE_MODE_GC16);
@@ -105,7 +105,7 @@ void drawBatteryBar() {
     if (percent < 0) percent = 0;
     if (percent > 100) percent = 100;
 
-    int barWidth = 540 * percent / 100;
+    int barWidth = 960 * percent / 100;
     canvas.fillRect(0, 0, barWidth, 1, 0);  // black
     Serial.printf("Battery: %dmV (%d%%)\n", voltage, percent);
 }
