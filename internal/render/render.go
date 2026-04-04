@@ -14,21 +14,21 @@ import (
 
 // DashboardData holds all data needed to render the dashboard.
 type DashboardData struct {
-	Now      time.Time
-	Weather  *WeatherData
-	Trains   []TrainInfo
-	Events   []CalendarEvent
+	Now     time.Time
+	Weather *WeatherData
+	Trains  []TrainInfo
+	Events  []CalendarEvent
 }
 
 // WeatherData holds weather information.
 type WeatherData struct {
-	Description   string
-	Temperature   float64
-	Humidity      int
-	PrecipChance  int
-	WeatherCode   int
-	Forecasts     []DayForecast
-	Hourly        []HourlyWeather
+	Description  string
+	Temperature  float64
+	Humidity     int
+	PrecipChance int
+	WeatherCode  int
+	Forecasts    []DayForecast
+	Hourly       []HourlyWeather
 }
 
 // DayForecast holds a single day's forecast.
@@ -104,8 +104,8 @@ func fontFace(f *truetype.Font, size float64) font.Face {
 	})
 }
 
-// RenderDashboard generates the dashboard image.
-func RenderDashboard(data DashboardData) (image.Image, error) {
+// Dashboard generates the dashboard image.
+func Dashboard(data DashboardData) (image.Image, error) {
 	dc := gg.NewContext(Width, Height)
 
 	// White background

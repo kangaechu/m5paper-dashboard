@@ -79,7 +79,7 @@ func main() {
 		}
 	}
 
-	img, err := render.RenderDashboard(data)
+	img, err := render.Dashboard(data)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "render error: %v\n", err)
 		os.Exit(1)

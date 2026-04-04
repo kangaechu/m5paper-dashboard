@@ -73,7 +73,7 @@ func handler(ctx context.Context) error {
 	}
 
 	// Render
-	img, err := render.RenderDashboard(data)
+	img, err := render.Dashboard(data)
 	if err != nil {
 		return fmt.Errorf("render: %w", err)
 	}

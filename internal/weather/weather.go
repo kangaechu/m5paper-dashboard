@@ -97,7 +97,7 @@ func wmoForCode(code string) int {
 // Fetch retrieves weather data from JMA API.
 func Fetch(locationCode string, now time.Time) (*render.WeatherData, error) {
 	url := fmt.Sprintf(forecastURL, locationCode)
-	resp, err := http.Get(url)
+	resp, err := http.Get(url) //nolint:gosec // URL is constructed from a constant format string
 	if err != nil {
 		return nil, fmt.Errorf("fetch JMA forecast: %w", err)
 	}
@@ -116,10 +116,10 @@ func Fetch(locationCode string, now time.Time) (*render.WeatherData, error) {
 		return nil, fmt.Errorf("empty forecast response")
 	}
 
-	return parseForecasts(forecasts, now)
+	return parseForecasts(forecasts)
 }
 
-func parseForecasts(forecasts []jmaForecast, now time.Time) (*render.WeatherData, error) {
+func parseForecasts(forecasts []jmaForecast) (*render.WeatherData, error) {
 	data := &render.WeatherData{}
 
 	// First report: short-term forecast
@@ -274,4 +274,3 @@ func assignPrecipToForecasts(data *render.WeatherData, ts timeSeries) {
 		}
 	}
 }
-

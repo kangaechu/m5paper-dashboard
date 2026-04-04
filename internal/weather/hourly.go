@@ -15,12 +15,12 @@ const (
 
 type openMeteoResponse struct {
 	Hourly struct {
-		Time                 []string  `json:"time"`
-		Temperature2m        []float64 `json:"temperature_2m"`
-		WeatherCode          []int     `json:"weather_code"`
-		PrecipitationProb    []int     `json:"precipitation_probability"`
-		WindSpeed10m         []float64 `json:"wind_speed_10m"`
-		WindDirection10m     []int     `json:"wind_direction_10m"`
+		Time              []string  `json:"time"`
+		Temperature2m     []float64 `json:"temperature_2m"`
+		WeatherCode       []int     `json:"weather_code"`
+		PrecipitationProb []int     `json:"precipitation_probability"`
+		WindSpeed10m      []float64 `json:"wind_speed_10m"`
+		WindDirection10m  []int     `json:"wind_direction_10m"`
 	} `json:"hourly"`
 }
 
