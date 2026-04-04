@@ -18,11 +18,9 @@ spec:
           containers:
             - name: dashboard
               image: ghcr.io/kangaechu/m5paper-dashboard:latest
-              command: ["/app/m5paper-dashboard", "--output", "/data/dashboard.jpg"]
+              command: ["/app/m5paper-dashboard", "--output", "/data/dashboard.jpg", "--cache", "/data/dam_history.json"]
               envFrom:
                 - configMapRef:
-                    name: m5paper-dashboard
-                - secretRef:
                     name: m5paper-dashboard
               volumeMounts:
                 - name: data

@@ -9,12 +9,7 @@
   "Environment": {
     "Variables": {
       "TZ": "Asia/Tokyo",
-      "LOCATION_CODE": "{{ env `LOCATION_CODE` `130000` }}",
-      "LOCATION_LAT": "{{ env `LOCATION_LAT` `35.6895` }}",
-      "LOCATION_LON": "{{ env `LOCATION_LON` `139.6917` }}",
-      "GOOGLE_CREDENTIALS_JSON": "{{ must_env `GOOGLE_CREDENTIALS_JSON` }}",
-      "GOOGLE_CALENDAR_IDS": "{{ env `GOOGLE_CALENDAR_IDS` `primary` }}",
-      "TRAIN_LINES": "{{ env `TRAIN_LINES` `` }}",
+      "DAM_CACHE_FILE": "/tmp/dam_history.json",
       "S3_BUCKET": "{{ must_env `S3_BUCKET` }}",
       "S3_OBJECT_KEY": "{{ must_env `S3_OBJECT_KEY` }}"
     }
