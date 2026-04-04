@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: m5paper-dashboard
+  namespace: m5paper-dashboard
+data:
+  LOCATION_CODE: "130000"
+  LOCATION_LAT: "35.6895"
+  LOCATION_LON: "139.6917"
+  GOOGLE_CALENDAR_IDS: "primary"
+  TRAIN_LINES: "山手線:21/0,都営三田線:129/0,都営浅草線:128/0,都営新宿線:130/0,都営大江戸線:131/0,東京メトロ銀座線:132/0,東京メトロ丸ノ内線:133/0,東京メトロ日比谷線:134/0,東京メトロ東西線:135/0,東京メトロ千代田線:136/0,東京メトロ有楽町線:137/0,東京メトロ半蔵門線:138/0,東京メトロ南北線:139/0,東京メトロ副都心線:540/0"
+  TZ: "Asia/Tokyo"
