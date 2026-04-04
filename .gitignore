@@ -5,3 +5,7 @@ function.zip
 .env
 firmware/.pio/
 firmware/include/config.h
+dam_history.json
+local
+lambda
+fetch-history
