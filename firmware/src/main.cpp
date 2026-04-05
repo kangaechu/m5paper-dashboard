@@ -12,7 +12,7 @@ void goToSleep();
 
 void setup() {
     M5.begin();
-    M5.EPD.SetRotation(90);
+    M5.EPD.SetRotation(0);
     M5.EPD.Clear(true);
     M5.RTC.begin();
 
