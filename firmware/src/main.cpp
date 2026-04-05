@@ -105,9 +105,6 @@ void drawBatteryBar() {
     if (percent < 0) percent = 0;
     if (percent > 100) percent = 100;
 
-    int barWidth = 960 * percent / 100;
-    canvas.fillRect(0, 0, barWidth, 1, 0);  // black
-
     // Draw battery percentage text in bottom-right corner
     char label[8];
     snprintf(label, sizeof(label), "%d%%", percent);
