@@ -364,7 +364,7 @@ func drawDamFooter(dc *gg.Context, dam *DamData) {
 	y := float64(footerY) + float64(footerHeight)/2
 
 	dc.SetRGB(0, 0, 0)
-	face := fontFace(fontRegular, 16)
+	face := fontFace(fontRegular, 20)
 	dc.SetFontFace(face)
 
 	stats := fmt.Sprintf("貯水位: %.2fm    貯水量: %.0f千m³    流入量: %.2fm³/s    放流量: %.2fm³/s",
