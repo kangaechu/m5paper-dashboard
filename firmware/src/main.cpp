@@ -90,7 +90,6 @@ bool fetchAndDisplay() {
 
     canvas.createCanvas(960, 540);
     canvas.drawJpg(buf, bytesRead, 0, 0);
-    canvas.ReverseColor();
     drawBatteryBar();
     canvas.pushCanvas(0, 0, UPDATE_MODE_GC16);
 
