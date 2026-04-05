@@ -109,7 +109,7 @@ void drawBatteryBar() {
     char label[8];
     snprintf(label, sizeof(label), "%d%%", percent);
     canvas.setTextSize(3);
-    canvas.setTextColor(0);  // black
+    canvas.setTextColor(15);  // black (driver inverts: 15 -> 0 = black on IT8951)
     canvas.setTextDatum(BR_DATUM);
     canvas.drawString(label, 950, 530);
 
