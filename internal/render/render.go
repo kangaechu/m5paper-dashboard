@@ -47,25 +47,13 @@ type DailyStorageRate struct {
 	StorageRate float64 `json:"storage_rate"` // percentage
 }
 
-var (
-	fontRegular *truetype.Font
-	fontWeather *truetype.Font
-	fontMDI     *truetype.Font
-)
+var fontRegular *truetype.Font
 
 func init() {
 	var err error
 	fontRegular, err = loadFont("NotoSansJP-SemiBold.ttf")
 	if err != nil {
 		panic("failed to load NotoSansJP: " + err.Error())
-	}
-	fontWeather, err = loadFont("weathericons.ttf")
-	if err != nil {
-		panic("failed to load Weather Icons: " + err.Error())
-	}
-	fontMDI, err = loadFont("materialdesignicons.ttf")
-	if err != nil {
-		panic("failed to load Material Design Icons: " + err.Error())
 	}
 }
 
