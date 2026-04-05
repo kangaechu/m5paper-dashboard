@@ -2,5 +2,5 @@ package fonts
 
 import "embed"
 
-//go:embed *.ttf *.otf
+//go:embed *.ttf
 var FS embed.FS

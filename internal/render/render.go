@@ -55,7 +55,7 @@ var (
 
 func init() {
 	var err error
-	fontRegular, err = loadFont("NotoSansJP-SemiBold.otf")
+	fontRegular, err = loadFont("NotoSansJP-SemiBold.ttf")
 	if err != nil {
 		panic("failed to load NotoSansJP: " + err.Error())
 	}
