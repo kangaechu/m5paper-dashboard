@@ -7,7 +7,6 @@ M5EPD_Canvas canvas(&M5.EPD);
 
 bool connectWiFi();
 bool fetchAndDisplay();
-void invertCanvas();
 void drawBatteryBar();
 void goToSleep();
 
@@ -91,7 +90,6 @@ bool fetchAndDisplay() {
 
     canvas.createCanvas(960, 540);
     canvas.drawJpg(buf, bytesRead, 0, 0);
-    invertCanvas();
     drawBatteryBar();
     canvas.pushCanvas(0, 0, UPDATE_MODE_GC16);
 
@@ -99,14 +97,6 @@ bool fetchAndDisplay() {
 
     Serial.println("Dashboard displayed");
     return true;
-}
-
-void invertCanvas() {
-    uint8_t* frameBuf = (uint8_t*)canvas.frameBuffer(8);
-    int bufSize = (960 * 540) / 2;  // 4bit per pixel, 2 pixels per byte
-    for (int i = 0; i < bufSize; i++) {
-        frameBuf[i] = ~frameBuf[i];  // invert: 0x00->0xFF (0,0 -> 15,15)
-    }
 }
 
 void drawBatteryBar() {
@@ -119,7 +109,7 @@ void drawBatteryBar() {
     char label[8];
     snprintf(label, sizeof(label), "%d%%", percent);
     canvas.setTextSize(3);
-    canvas.setTextColor(15);  // black (inverted: 15=black on M5EPD)
+    canvas.setTextColor(0);  // black
     canvas.setTextDatum(BR_DATUM);
     canvas.drawString(label, 950, 530);
 
