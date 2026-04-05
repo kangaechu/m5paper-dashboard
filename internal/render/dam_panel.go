@@ -284,7 +284,6 @@ func drawHourlyDelta(dc *gg.Context, history []DamObservation) {
 	type delta struct {
 		timeStr string
 		diff    float64
-		storage float64
 		rate    float64
 	}
 
@@ -300,7 +299,6 @@ func drawHourlyDelta(dc *gg.Context, history []DamObservation) {
 		deltas = append(deltas, delta{
 			timeStr: history[i].Time.Format("15:04"),
 			diff:    diff,
-			storage: history[i].EffectiveStorage,
 			rate:    rate,
 		})
 	}
@@ -339,15 +337,10 @@ func drawHourlyDelta(dc *gg.Context, history []DamObservation) {
 		dc.SetFontFace(faceLabel)
 		dc.DrawStringAnchored(diffStr, x, baseY+68, 0.5, 0.5)
 
-		// Storage value
-		dc.SetRGB(0.5, 0.5, 0.5)
-		dc.SetFontFace(faceLabel)
-		dc.DrawStringAnchored(fmt.Sprintf("%.0f", d.storage), x, baseY+98, 0.5, 0.5)
-
 		// Storage rate
 		dc.SetRGB(0.3, 0.3, 0.3)
 		dc.SetFontFace(faceLabel)
-		dc.DrawStringAnchored(fmt.Sprintf("%.1f%%", d.rate), x, baseY+128, 0.5, 0.5)
+		dc.DrawStringAnchored(fmt.Sprintf("%.1f%%", d.rate), x, baseY+98, 0.5, 0.5)
 	}
 
 	// Column separators
@@ -355,7 +348,7 @@ func drawHourlyDelta(dc *gg.Context, history []DamObservation) {
 	dc.SetLineWidth(0.5)
 	for i := 1; i < colCount; i++ {
 		x := float64(marginX) + float64(i)*colWidth
-		dc.DrawLine(x, baseY+25, x, baseY+138)
+		dc.DrawLine(x, baseY+25, x, baseY+108)
 	}
 	dc.Stroke()
 
@@ -364,8 +357,7 @@ func drawHourlyDelta(dc *gg.Context, history []DamObservation) {
 	dc.SetFontFace(faceLabel)
 	dc.DrawStringAnchored("時刻", float64(marginX)-2, baseY+38, 1, 0.5)
 	dc.DrawStringAnchored("差異", float64(marginX)-2, baseY+68, 1, 0.5)
-	dc.DrawStringAnchored("貯水量", float64(marginX)-2, baseY+98, 1, 0.5)
-	dc.DrawStringAnchored("貯水率", float64(marginX)-2, baseY+128, 1, 0.5)
+	dc.DrawStringAnchored("貯水率", float64(marginX)-2, baseY+98, 1, 0.5)
 }
 
 func drawDamFooter(dc *gg.Context, dam *DamData) {
