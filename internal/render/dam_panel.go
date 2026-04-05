@@ -8,6 +8,8 @@ import (
 	"github.com/fogleman/gg"
 )
 
+const effectiveCapacity = 28420.0 // 有効貯水容量 (×10³m³)
+
 var weekdayJP = [...]string{"日", "月", "火", "水", "木", "金", "土"}
 
 func drawDamHeader(dc *gg.Context, now time.Time, dam *DamData) {
@@ -283,15 +285,23 @@ func drawHourlyDelta(dc *gg.Context, history []DamObservation) {
 		timeStr string
 		diff    float64
 		storage float64
+		rate    float64
 	}
 
+	// Collect deltas at 2-hour intervals
 	var deltas []delta
-	for i := 0; i < len(history)-1 && i < 24; i++ {
-		diff := history[i].EffectiveStorage - history[i+1].EffectiveStorage
+	for i := 0; i < len(history)-1 && i < 24; i += 2 {
+		end := i + 2
+		if end >= len(history) {
+			end = len(history) - 1
+		}
+		diff := history[i].EffectiveStorage - history[end].EffectiveStorage
+		rate := history[i].EffectiveStorage / effectiveCapacity * 100
 		deltas = append(deltas, delta{
 			timeStr: history[i].Time.Format("15:04"),
 			diff:    diff,
 			storage: history[i].EffectiveStorage,
+			rate:    rate,
 		})
 	}
 
@@ -301,14 +311,11 @@ func drawHourlyDelta(dc *gg.Context, history []DamObservation) {
 
 	// Draw as a table with columns
 	colCount := len(deltas)
-	if colCount > 24 {
-		colCount = 24
-	}
 
 	availWidth := float64(contentWidth)
 	colWidth := availWidth / float64(colCount)
 
-	faceSmall := fontFace(fontRegular, 11)
+	faceLabel := fontFace(fontRegular, 16)
 
 	for i := 0; i < colCount; i++ {
 		d := deltas[i]
@@ -316,8 +323,8 @@ func drawHourlyDelta(dc *gg.Context, history []DamObservation) {
 
 		// Time label
 		dc.SetRGB(0.3, 0.3, 0.3)
-		dc.SetFontFace(faceSmall)
-		dc.DrawStringAnchored(d.timeStr, x, baseY+35, 0.5, 0.5)
+		dc.SetFontFace(faceLabel)
+		dc.DrawStringAnchored(d.timeStr, x, baseY+38, 0.5, 0.5)
 
 		// Delta value with color coding
 		var diffStr string
@@ -329,14 +336,19 @@ func drawHourlyDelta(dc *gg.Context, history []DamObservation) {
 			dc.SetRGB(0.5, 0.5, 0.5) // gray for negative
 		}
 
-		faceVal := fontFace(fontRegular, 14)
+		faceVal := fontFace(fontRegular, 20)
 		dc.SetFontFace(faceVal)
-		dc.DrawStringAnchored(diffStr, x, baseY+58, 0.5, 0.5)
+		dc.DrawStringAnchored(diffStr, x, baseY+65, 0.5, 0.5)
 
 		// Storage value
 		dc.SetRGB(0.5, 0.5, 0.5)
-		dc.SetFontFace(faceSmall)
-		dc.DrawStringAnchored(fmt.Sprintf("%.0f", d.storage), x, baseY+78, 0.5, 0.5)
+		dc.SetFontFace(faceLabel)
+		dc.DrawStringAnchored(fmt.Sprintf("%.0f", d.storage), x, baseY+90, 0.5, 0.5)
+
+		// Storage rate
+		dc.SetRGB(0.3, 0.3, 0.3)
+		dc.SetFontFace(faceLabel)
+		dc.DrawStringAnchored(fmt.Sprintf("%.1f%%", d.rate), x, baseY+115, 0.5, 0.5)
 	}
 
 	// Column separators
@@ -344,16 +356,17 @@ func drawHourlyDelta(dc *gg.Context, history []DamObservation) {
 	dc.SetLineWidth(0.5)
 	for i := 1; i < colCount; i++ {
 		x := float64(marginX) + float64(i)*colWidth
-		dc.DrawLine(x, baseY+25, x, baseY+88)
+		dc.DrawLine(x, baseY+25, x, baseY+125)
 	}
 	dc.Stroke()
 
 	// Row labels
 	dc.SetRGB(0.5, 0.5, 0.5)
-	dc.SetFontFace(faceSmall)
-	dc.DrawStringAnchored("時刻", float64(marginX)-2, baseY+35, 1, 0.5)
-	dc.DrawStringAnchored("差異", float64(marginX)-2, baseY+58, 1, 0.5)
-	dc.DrawStringAnchored("貯水量", float64(marginX)-2, baseY+78, 1, 0.5)
+	dc.SetFontFace(faceLabel)
+	dc.DrawStringAnchored("時刻", float64(marginX)-2, baseY+38, 1, 0.5)
+	dc.DrawStringAnchored("差異", float64(marginX)-2, baseY+65, 1, 0.5)
+	dc.DrawStringAnchored("貯水量", float64(marginX)-2, baseY+90, 1, 0.5)
+	dc.DrawStringAnchored("貯水率", float64(marginX)-2, baseY+115, 1, 0.5)
 }
 
 func drawDamFooter(dc *gg.Context, dam *DamData) {
