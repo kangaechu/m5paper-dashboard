@@ -8,6 +8,8 @@ import (
 	"github.com/fogleman/gg"
 )
 
+const effectiveCapacity = 28420.0 // 有効貯水容量 (×10³m³)
+
 var weekdayJP = [...]string{"日", "月", "火", "水", "木", "金", "土"}
 
 func drawDamHeader(dc *gg.Context, now time.Time, dam *DamData) {
@@ -283,6 +285,7 @@ func drawHourlyDelta(dc *gg.Context, history []DamObservation) {
 		timeStr string
 		diff    float64
 		storage float64
+		rate    float64
 	}
 
 	// Collect deltas at 2-hour intervals
@@ -293,10 +296,12 @@ func drawHourlyDelta(dc *gg.Context, history []DamObservation) {
 			end = len(history) - 1
 		}
 		diff := history[i].EffectiveStorage - history[end].EffectiveStorage
+		rate := history[i].EffectiveStorage / effectiveCapacity * 100
 		deltas = append(deltas, delta{
 			timeStr: history[i].Time.Format("15:04"),
 			diff:    diff,
 			storage: history[i].EffectiveStorage,
+			rate:    rate,
 		})
 	}
 
@@ -339,6 +344,11 @@ func drawHourlyDelta(dc *gg.Context, history []DamObservation) {
 		dc.SetRGB(0.5, 0.5, 0.5)
 		dc.SetFontFace(faceLabel)
 		dc.DrawStringAnchored(fmt.Sprintf("%.0f", d.storage), x, baseY+90, 0.5, 0.5)
+
+		// Storage rate
+		dc.SetRGB(0.3, 0.3, 0.3)
+		dc.SetFontFace(faceLabel)
+		dc.DrawStringAnchored(fmt.Sprintf("%.1f%%", d.rate), x, baseY+115, 0.5, 0.5)
 	}
 
 	// Column separators
@@ -346,7 +356,7 @@ func drawHourlyDelta(dc *gg.Context, history []DamObservation) {
 	dc.SetLineWidth(0.5)
 	for i := 1; i < colCount; i++ {
 		x := float64(marginX) + float64(i)*colWidth
-		dc.DrawLine(x, baseY+25, x, baseY+100)
+		dc.DrawLine(x, baseY+25, x, baseY+125)
 	}
 	dc.Stroke()
 
@@ -356,6 +366,7 @@ func drawHourlyDelta(dc *gg.Context, history []DamObservation) {
 	dc.DrawStringAnchored("時刻", float64(marginX)-2, baseY+38, 1, 0.5)
 	dc.DrawStringAnchored("差異", float64(marginX)-2, baseY+65, 1, 0.5)
 	dc.DrawStringAnchored("貯水量", float64(marginX)-2, baseY+90, 1, 0.5)
+	dc.DrawStringAnchored("貯水率", float64(marginX)-2, baseY+115, 1, 0.5)
 }
 
 func drawDamFooter(dc *gg.Context, dam *DamData) {
