@@ -315,7 +315,7 @@ func drawHourlyDelta(dc *gg.Context, history []DamObservation) {
 	availWidth := float64(contentWidth)
 	colWidth := availWidth / float64(colCount)
 
-	faceLabel := fontFace(fontRegular, 16)
+	faceLabel := fontFace(fontRegular, 20)
 
 	for i := 0; i < colCount; i++ {
 		d := deltas[i]
@@ -336,19 +336,18 @@ func drawHourlyDelta(dc *gg.Context, history []DamObservation) {
 			dc.SetRGB(0.5, 0.5, 0.5) // gray for negative
 		}
 
-		faceVal := fontFace(fontRegular, 20)
-		dc.SetFontFace(faceVal)
-		dc.DrawStringAnchored(diffStr, x, baseY+65, 0.5, 0.5)
+		dc.SetFontFace(faceLabel)
+		dc.DrawStringAnchored(diffStr, x, baseY+68, 0.5, 0.5)
 
 		// Storage value
 		dc.SetRGB(0.5, 0.5, 0.5)
 		dc.SetFontFace(faceLabel)
-		dc.DrawStringAnchored(fmt.Sprintf("%.0f", d.storage), x, baseY+90, 0.5, 0.5)
+		dc.DrawStringAnchored(fmt.Sprintf("%.0f", d.storage), x, baseY+98, 0.5, 0.5)
 
 		// Storage rate
 		dc.SetRGB(0.3, 0.3, 0.3)
 		dc.SetFontFace(faceLabel)
-		dc.DrawStringAnchored(fmt.Sprintf("%.1f%%", d.rate), x, baseY+115, 0.5, 0.5)
+		dc.DrawStringAnchored(fmt.Sprintf("%.1f%%", d.rate), x, baseY+128, 0.5, 0.5)
 	}
 
 	// Column separators
@@ -356,7 +355,7 @@ func drawHourlyDelta(dc *gg.Context, history []DamObservation) {
 	dc.SetLineWidth(0.5)
 	for i := 1; i < colCount; i++ {
 		x := float64(marginX) + float64(i)*colWidth
-		dc.DrawLine(x, baseY+25, x, baseY+125)
+		dc.DrawLine(x, baseY+25, x, baseY+138)
 	}
 	dc.Stroke()
 
@@ -364,9 +363,9 @@ func drawHourlyDelta(dc *gg.Context, history []DamObservation) {
 	dc.SetRGB(0.5, 0.5, 0.5)
 	dc.SetFontFace(faceLabel)
 	dc.DrawStringAnchored("時刻", float64(marginX)-2, baseY+38, 1, 0.5)
-	dc.DrawStringAnchored("差異", float64(marginX)-2, baseY+65, 1, 0.5)
-	dc.DrawStringAnchored("貯水量", float64(marginX)-2, baseY+90, 1, 0.5)
-	dc.DrawStringAnchored("貯水率", float64(marginX)-2, baseY+115, 1, 0.5)
+	dc.DrawStringAnchored("差異", float64(marginX)-2, baseY+68, 1, 0.5)
+	dc.DrawStringAnchored("貯水量", float64(marginX)-2, baseY+98, 1, 0.5)
+	dc.DrawStringAnchored("貯水率", float64(marginX)-2, baseY+128, 1, 0.5)
 }
 
 func drawDamFooter(dc *gg.Context, dam *DamData) {
