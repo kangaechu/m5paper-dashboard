@@ -107,6 +107,15 @@ void drawBatteryBar() {
 
     int barWidth = 960 * percent / 100;
     canvas.fillRect(0, 0, barWidth, 1, 0);  // black
+
+    // Draw battery percentage text in bottom-right corner
+    char label[8];
+    snprintf(label, sizeof(label), "%d%%", percent);
+    canvas.setTextSize(3);
+    canvas.setTextColor(0);  // black
+    canvas.setTextDatum(BR_DATUM);
+    canvas.drawString(label, 950, 530);
+
     Serial.printf("Battery: %dmV (%d%%)\n", voltage, percent);
 }
 
