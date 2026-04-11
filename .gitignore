@@ -1,0 +1,12 @@
+output.jpg
+output_dark.jpg
+bootstrap
+function.zip
+.DS_Store
+.env
+firmware/.pio/
+firmware/include/config.h
+dam_history.json
+local
+lambda
+fetch-history
