@@ -87,7 +87,7 @@ func centeredBaselineY(face font.Face, centerY float64) float64 {
 }
 
 // Dashboard generates the dam dashboard image.
-func Dashboard(data DamDashboardData) (image.Image, error) {
+func Dashboard(data DamDashboardData) (*image.NRGBA, error) {
 	dc := gg.NewContext(Width, Height)
 
 	// White background
@@ -109,6 +109,18 @@ func Dashboard(data DamDashboardData) (image.Image, error) {
 	drawSeparator(dc, float64(footerY))
 
 	return toGrayscale(dc.Image()), nil
+}
+
+// Invert returns a new image with all pixel values inverted (255 - v).
+func Invert(src *image.NRGBA) *image.NRGBA {
+	dst := image.NewNRGBA(src.Bounds())
+	for i := 0; i < len(src.Pix); i += 4 {
+		dst.Pix[i+0] = 255 - src.Pix[i+0] // R
+		dst.Pix[i+1] = 255 - src.Pix[i+1] // G
+		dst.Pix[i+2] = 255 - src.Pix[i+2] // B
+		dst.Pix[i+3] = src.Pix[i+3]       // A
+	}
+	return dst
 }
 
 func drawSeparator(dc *gg.Context, y float64) {

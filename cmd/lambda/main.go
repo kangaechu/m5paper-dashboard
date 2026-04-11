@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/aws/aws-lambda-go/lambda"
@@ -61,8 +63,18 @@ func handler(ctx context.Context) error {
 	if err := uploader.Upload(ctx, bucket, key, img); err != nil {
 		return fmt.Errorf("upload: %w", err)
 	}
-
 	fmt.Printf("Dashboard uploaded to s3://%s/%s\n", bucket, key)
+
+	// Upload dark version
+	darkKey := envOrDefault("S3_OBJECT_KEY_DARK", "")
+	if darkKey == "" {
+		ext := filepath.Ext(key)
+		darkKey = strings.TrimSuffix(key, ext) + "_dark" + ext
+	}
+	if err := uploader.Upload(ctx, bucket, darkKey, render.Invert(img)); err != nil {
+		return fmt.Errorf("upload dark: %w", err)
+	}
+	fmt.Printf("Dashboard (dark) uploaded to s3://%s/%s\n", bucket, darkKey)
 	return nil
 }
 
