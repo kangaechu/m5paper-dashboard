@@ -18,21 +18,23 @@ func drawDamHeader(dc *gg.Context, now time.Time, dam *DamData) {
 	// Dam name (left)
 	face := fontFace(fontRegular, 22)
 	dc.SetFontFace(face)
-	dc.DrawStringAnchored("宇連ダム貯水率", float64(marginX), float64(headerHeight)/2, 0, 0.5)
+	baselineY := centeredBaselineY(face, float64(headerHeight)/2)
+
+	dc.DrawStringAnchored("宇連ダム貯水率", float64(marginX), baselineY, 0, 0)
 
 	// Date and time (center-right)
 	dateStr := fmt.Sprintf("%d年%d月%d日(%s) %s",
 		now.Year(), now.Month(), now.Day(), weekdayJP[now.Weekday()],
 		now.Format("15:04"))
-	dc.DrawStringAnchored(dateStr, float64(Width-marginX), float64(headerHeight)/2, 1, 0.5)
+	dc.DrawStringAnchored(dateStr, float64(Width-marginX), baselineY, 1, 0)
 
-	// Observation time (right, smaller)
+	// Observation time (center, smaller — same baseline)
 	if dam != nil {
 		face2 := fontFace(fontRegular, 14)
 		dc.SetFontFace(face2)
 		dc.SetRGB(0.4, 0.4, 0.4)
 		obsStr := fmt.Sprintf("観測: %s", dam.ObservedAt.Format("01/02 15:04"))
-		dc.DrawStringAnchored(obsStr, float64(Width/2), float64(headerHeight)/2, 0.5, 0.5)
+		dc.DrawStringAnchored(obsStr, float64(Width/2), baselineY, 0.5, 0)
 	}
 }
 
@@ -44,20 +46,20 @@ func drawStorageRate(dc *gg.Context, dam *DamData) {
 	dc.SetRGB(0, 0, 0)
 	face := fontFace(fontRegular, 20)
 	dc.SetFontFace(face)
-	dc.DrawStringAnchored("現在の貯水率は", centerX, baseY+50, 0.5, 0.5)
+	dc.DrawStringAnchored("現在の貯水率は", centerX, centeredBaselineY(face, baseY+50), 0.5, 0)
 
 	// Large percentage number
 	rateStr := fmt.Sprintf("%.1f%%", dam.StorageRate)
 	faceLarge := fontFace(fontRegular, 80)
 	dc.SetFontFace(faceLarge)
-	dc.DrawStringAnchored(rateStr, centerX, baseY+150, 0.5, 0.5)
+	dc.DrawStringAnchored(rateStr, centerX, centeredBaselineY(faceLarge, baseY+150), 0.5, 0)
 
 	// Storage volume below
 	face3 := fontFace(fontRegular, 16)
 	dc.SetFontFace(face3)
 	dc.SetRGB(0.3, 0.3, 0.3)
 	volStr := fmt.Sprintf("(%.0f / 28,420 千m³)", dam.EffectiveStorage)
-	dc.DrawStringAnchored(volStr, centerX, baseY+210, 0.5, 0.5)
+	dc.DrawStringAnchored(volStr, centerX, centeredBaselineY(face3, baseY+210), 0.5, 0)
 }
 
 func drawYearlyChart(dc *gg.Context, now time.Time, history map[string][]DailyStorageRate) {
@@ -76,7 +78,7 @@ func drawYearlyChart(dc *gg.Context, now time.Time, history map[string][]DailySt
 	dc.SetRGB(0, 0, 0)
 	face := fontFace(fontRegular, 14)
 	dc.SetFontFace(face)
-	dc.DrawStringAnchored("年間貯水率 (%)", chartLeft+chartWidth/2, float64(mainY)+12, 0.5, 0.5)
+	dc.DrawStringAnchored("年間貯水率 (%)", chartLeft+chartWidth/2, centeredBaselineY(face, float64(mainY)+12), 0.5, 0)
 
 	// Draw axes
 	dc.SetRGB(0, 0, 0)
@@ -91,7 +93,7 @@ func drawYearlyChart(dc *gg.Context, now time.Time, history map[string][]DailySt
 	dc.SetRGB(0.4, 0.4, 0.4)
 	for _, pct := range []float64{0, 25, 50, 75, 100} {
 		y := chartBottom - (pct/100)*chartHeight
-		dc.DrawStringAnchored(fmt.Sprintf("%.0f", pct), chartLeft-5, y, 1, 0.5)
+		dc.DrawStringAnchored(fmt.Sprintf("%.0f", pct), chartLeft-5, centeredBaselineY(faceSmall, y), 1, 0)
 		// Grid line
 		if pct > 0 && pct < 100 {
 			dc.SetRGB(0.85, 0.85, 0.85)
@@ -199,7 +201,7 @@ func drawYearlyChart(dc *gg.Context, now time.Time, history map[string][]DailySt
 		}
 		dc.Stroke()
 		dc.SetFontFace(faceSmall)
-		dc.DrawStringAnchored(yearKey, legendX+25, legendY, 0, 0.5)
+		dc.DrawStringAnchored(yearKey, legendX+25, centeredBaselineY(faceSmall, legendY), 0, 0)
 	}
 }
 
@@ -276,9 +278,9 @@ func drawHourlyDelta(dc *gg.Context, history []DamObservation) {
 	baseY := float64(hourlyDeltaY) + 10
 
 	dc.SetRGB(0, 0, 0)
-	face := fontFace(fontRegular, 14)
-	dc.SetFontFace(face)
-	dc.DrawStringAnchored("24時間の貯水量変化 (千m³)", float64(marginX), baseY+8, 0, 0.5)
+	faceTitle := fontFace(fontRegular, 14)
+	dc.SetFontFace(faceTitle)
+	dc.DrawStringAnchored("24時間の貯水量変化 (千m³)", float64(marginX), centeredBaselineY(faceTitle, baseY+8), 0, 0)
 
 	// Calculate deltas between consecutive observations
 	type delta struct {
@@ -314,6 +316,9 @@ func drawHourlyDelta(dc *gg.Context, history []DamObservation) {
 	colWidth := availWidth / float64(colCount)
 
 	faceLabel := fontFace(fontRegular, 20)
+	blRow1 := centeredBaselineY(faceLabel, baseY+38)
+	blRow2 := centeredBaselineY(faceLabel, baseY+68)
+	blRow3 := centeredBaselineY(faceLabel, baseY+98)
 
 	for i := 0; i < colCount; i++ {
 		d := deltas[i]
@@ -322,7 +327,7 @@ func drawHourlyDelta(dc *gg.Context, history []DamObservation) {
 		// Time label
 		dc.SetRGB(0.3, 0.3, 0.3)
 		dc.SetFontFace(faceLabel)
-		dc.DrawStringAnchored(d.timeStr, x, baseY+38, 0.5, 0.5)
+		dc.DrawStringAnchored(d.timeStr, x, blRow1, 0.5, 0)
 
 		// Delta value with color coding
 		var diffStr string
@@ -335,12 +340,12 @@ func drawHourlyDelta(dc *gg.Context, history []DamObservation) {
 		}
 
 		dc.SetFontFace(faceLabel)
-		dc.DrawStringAnchored(diffStr, x, baseY+68, 0.5, 0.5)
+		dc.DrawStringAnchored(diffStr, x, blRow2, 0.5, 0)
 
 		// Storage rate
 		dc.SetRGB(0.3, 0.3, 0.3)
 		dc.SetFontFace(faceLabel)
-		dc.DrawStringAnchored(fmt.Sprintf("%.1f%%", d.rate), x, baseY+98, 0.5, 0.5)
+		dc.DrawStringAnchored(fmt.Sprintf("%.1f%%", d.rate), x, blRow3, 0.5, 0)
 	}
 
 	// Column separators
@@ -355,13 +360,13 @@ func drawHourlyDelta(dc *gg.Context, history []DamObservation) {
 	// Row labels
 	dc.SetRGB(0.5, 0.5, 0.5)
 	dc.SetFontFace(faceLabel)
-	dc.DrawStringAnchored("時刻", float64(marginX)-2, baseY+38, 1, 0.5)
-	dc.DrawStringAnchored("差異", float64(marginX)-2, baseY+68, 1, 0.5)
-	dc.DrawStringAnchored("貯水率", float64(marginX)-2, baseY+98, 1, 0.5)
+	dc.DrawStringAnchored("時刻", float64(marginX)-2, blRow1, 1, 0)
+	dc.DrawStringAnchored("差異", float64(marginX)-2, blRow2, 1, 0)
+	dc.DrawStringAnchored("貯水率", float64(marginX)-2, blRow3, 1, 0)
 }
 
 func drawDamFooter(dc *gg.Context, dam *DamData) {
-	y := float64(footerY) + float64(footerHeight)/2
+	centerY := float64(footerY) + float64(footerHeight)/2
 
 	dc.SetRGB(0, 0, 0)
 	face := fontFace(fontRegular, 20)
@@ -369,5 +374,5 @@ func drawDamFooter(dc *gg.Context, dam *DamData) {
 
 	stats := fmt.Sprintf("貯水位: %.2fm    貯水量: %.0f千m³    流入量: %.2fm³/s    放流量: %.2fm³/s",
 		dam.WaterLevel, dam.EffectiveStorage, dam.Inflow, dam.Outflow)
-	dc.DrawStringAnchored(stats, float64(Width)/2, y, 0.5, 0.5)
+	dc.DrawStringAnchored(stats, float64(Width)/2, centeredBaselineY(face, centerY), 0.5, 0)
 }
