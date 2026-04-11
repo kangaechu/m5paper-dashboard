@@ -111,6 +111,23 @@ func Dashboard(data DamDashboardData) (image.Image, error) {
 	return toGrayscale(dc.Image()), nil
 }
 
+// Invert returns a new image with all pixel values inverted (255 - v).
+func Invert(src image.Image) *image.NRGBA {
+	bounds := src.Bounds()
+	dst := image.NewNRGBA(bounds)
+	for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
+		for x := bounds.Min.X; x < bounds.Max.X; x++ {
+			r, g, b, a := src.At(x, y).RGBA()
+			i := dst.PixOffset(x, y)
+			dst.Pix[i+0] = 255 - uint8(r>>8)
+			dst.Pix[i+1] = 255 - uint8(g>>8)
+			dst.Pix[i+2] = 255 - uint8(b>>8)
+			dst.Pix[i+3] = uint8(a >> 8)
+		}
+	}
+	return dst
+}
+
 func drawSeparator(dc *gg.Context, y float64) {
 	dc.SetRGB(separatorGray, separatorGray, separatorGray)
 	dc.SetLineWidth(1)

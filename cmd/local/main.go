@@ -4,8 +4,10 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
+	"image"
 	"image/jpeg"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -16,7 +18,8 @@ import (
 func main() {
 	loadEnvFile(".env")
 
-	output := flag.String("output", "output.jpg", "output JPEG file path")
+	output := flag.String("output", "output.jpg", "output JPEG file path (white background)")
+	outputDark := flag.String("output-dark", "", "output JPEG file path (dark background); derived from --output if empty")
 	damURL := flag.String("dam-url", envOrDefault("DAM_URL", dam.DefaultURL), "dam data URL")
 	cacheFile := flag.String("cache", envOrDefault("DAM_CACHE_FILE", "dam_history.json"), "dam history cache file path")
 	flag.Parse()
@@ -55,7 +58,21 @@ func main() {
 		os.Exit(1)
 	}
 
-	f, err := os.Create(*output)
+	// Derive dark output path from --output if not specified
+	darkPath := *outputDark
+	if darkPath == "" {
+		ext := filepath.Ext(*output)
+		darkPath = strings.TrimSuffix(*output, ext) + "_dark" + ext
+	}
+
+	saveJPEG(*output, img)
+	saveJPEG(darkPath, render.Invert(img))
+
+	fmt.Printf("Dashboard saved to %s and %s\n", *output, darkPath)
+}
+
+func saveJPEG(path string, img image.Image) {
+	f, err := os.Create(path)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "file error: %v\n", err)
 		os.Exit(1)
@@ -66,8 +83,6 @@ func main() {
 		fmt.Fprintf(os.Stderr, "encode error: %v\n", err)
 		os.Exit(1)
 	}
-
-	fmt.Printf("Dashboard saved to %s\n", *output)
 }
 
 func envOrDefault(key, fallback string) string {
