@@ -91,6 +91,7 @@ bool fetchAndDisplay() {
     canvas.createCanvas(960, 540);
     canvas.drawJpg(buf, bytesRead, 0, 0);
     drawBatteryBar();
+    M5.EPD.Clear(false);
     canvas.pushCanvas(0, 0, UPDATE_MODE_GC16);
 
     free(buf);
