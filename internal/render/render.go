@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/fogleman/gg"
-	"github.com/golang/freetype/truetype"
 	"golang.org/x/image/font"
+	"golang.org/x/image/font/opentype"
 
 	"github.com/kangaechu/m5paper-dashboard/fonts"
 )
@@ -47,7 +47,7 @@ type DailyStorageRate struct {
 	StorageRate float64 `json:"storage_rate"` // percentage
 }
 
-var fontRegular *truetype.Font
+var fontRegular *opentype.Font
 
 func init() {
 	var err error
@@ -57,20 +57,33 @@ func init() {
 	}
 }
 
-func loadFont(name string) (*truetype.Font, error) {
+func loadFont(name string) (*opentype.Font, error) {
 	data, err := fonts.FS.ReadFile(name)
 	if err != nil {
 		return nil, err
 	}
-	return truetype.Parse(data)
+	return opentype.Parse(data)
 }
 
-func fontFace(f *truetype.Font, size float64) font.Face {
-	return truetype.NewFace(f, &truetype.Options{
+func fontFace(f *opentype.Font, size float64) font.Face {
+	face, err := opentype.NewFace(f, &opentype.FaceOptions{
 		Size:    size,
 		DPI:     72,
-		Hinting: font.HintingFull,
+		Hinting: font.HintingNone,
 	})
+	if err != nil {
+		panic("failed to create font face: " + err.Error())
+	}
+	return face
+}
+
+// centeredBaselineY returns the baseline Y that visually centers text
+// of the given font.Face around centerY.
+func centeredBaselineY(face font.Face, centerY float64) float64 {
+	m := face.Metrics()
+	ascent := float64(m.Ascent) / 64.0
+	descent := float64(m.Descent) / 64.0
+	return centerY + (ascent-descent)/2
 }
 
 // Dashboard generates the dam dashboard image.
