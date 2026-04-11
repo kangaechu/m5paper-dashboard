@@ -1,4 +1,4 @@
-.PHONY: run build-lambda deploy test clean
+.PHONY: run build-lambda deploy test clean fw-build fw-upload fw-monitor fw-clean
 
 run:
 	go run ./cmd/local --output output.jpg
@@ -13,4 +13,16 @@ test:
 	go test ./...
 
 clean:
-	rm -f output.jpg bootstrap function.zip
+	rm -f output.jpg output_dark.jpg bootstrap function.zip
+
+fw-build:
+	cd firmware && pio run
+
+fw-upload:
+	cd firmware && pio run --target upload
+
+fw-monitor:
+	cd firmware && pio device monitor
+
+fw-clean:
+	cd firmware && pio run --target clean

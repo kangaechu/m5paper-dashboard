@@ -100,15 +100,6 @@ bool fetchAndDisplay() {
     return true;
 }
 
-void displaySplash() {
-    size_t jpg_len = wp_jpg_end - wp_jpg_start;
-    Serial.printf("Displaying splash image (%d bytes)\n", jpg_len);
-    canvas.createCanvas(960, 540);
-    canvas.drawJpg(wp_jpg_start, jpg_len, 0, 0);
-    canvas.pushCanvas(0, 0, UPDATE_MODE_GC16);
-    delay(5000);
-}
-
 void drawBatteryBar() {
     uint32_t voltage = M5.getBatteryVoltage();
     int percent = (voltage - 3200) * 100 / (4200 - 3200);
