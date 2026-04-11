@@ -118,7 +118,7 @@ func Invert(src *image.NRGBA) *image.NRGBA {
 		dst.Pix[i+0] = 255 - src.Pix[i+0] // R
 		dst.Pix[i+1] = 255 - src.Pix[i+1] // G
 		dst.Pix[i+2] = 255 - src.Pix[i+2] // B
-		dst.Pix[i+3] = src.Pix[i+3]        // A
+		dst.Pix[i+3] = src.Pix[i+3]       // A
 	}
 	return dst
 }
