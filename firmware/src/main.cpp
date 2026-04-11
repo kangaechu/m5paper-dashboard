@@ -5,6 +5,8 @@
 
 M5EPD_Canvas canvas(&M5.EPD);
 
+RTC_DATA_ATTR bool useDarkImage = false;
+
 bool connectWiFi();
 bool fetchAndDisplay();
 void drawBatteryBar();
@@ -24,6 +26,8 @@ void setup() {
 
     if (!fetchAndDisplay()) {
         Serial.println("Failed to fetch dashboard image");
+    } else {
+        useDarkImage = !useDarkImage;
     }
 
     WiFi.disconnect(true);
@@ -54,8 +58,17 @@ bool connectWiFi() {
 }
 
 bool fetchAndDisplay() {
+    String url = IMAGE_URL;
+    if (useDarkImage) {
+        int dotIdx = url.lastIndexOf('.');
+        if (dotIdx >= 0) {
+            url = url.substring(0, dotIdx) + "_dark" + url.substring(dotIdx);
+        }
+    }
+    Serial.printf("Fetching: %s\n", url.c_str());
+
     HTTPClient http;
-    http.begin(IMAGE_URL);
+    http.begin(url);
     http.setTimeout(15000);
 
     int httpCode = http.GET();
