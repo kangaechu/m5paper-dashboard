@@ -19,26 +19,21 @@ type DamDashboardData struct {
 	YearlyHistory map[string][]DailyStorageRate // key: "2026", "2025", ...
 }
 
-// DamData holds current dam observation data.
+// DamData holds current dam observation data for the entire river system.
 type DamData struct {
-	Name             string
-	ObservedAt       time.Time
-	WaterLevel       float64 // 貯水位 (EL.m)
-	EffectiveStorage float64 // 有効貯水量 (×10³m³)
-	StorageRate      float64 // 貯水率 (%)
-	Inflow           float64 // 流入量 (m³/s)
-	Outflow          float64 // 放流量 (m³/s)
-	Rainfall         float64 // ダム地点雨量 (mm/h)
-	History          []DamObservation
+	SystemName  string         // e.g. "荒川水系"
+	ObservedAt  time.Time      // observation timestamp from the source page
+	Total       DamReservoir   // aggregated total of all reservoirs
+	Reservoirs  []DamReservoir // individual reservoirs (display order)
+	StorageRate float64        // shortcut for Total.StorageRate
 }
 
-// DamObservation holds one hourly observation.
-type DamObservation struct {
-	Time             time.Time
-	WaterLevel       float64
-	EffectiveStorage float64
-	Inflow           float64
-	Outflow          float64
+// DamReservoir holds the headline figures for one dam (or the system total).
+type DamReservoir struct {
+	Name              string
+	EffectiveCapacity float64 // 有効容量 (万m³)
+	Storage           float64 // 貯水量 (万m³)
+	StorageRate       float64 // 貯水率 (%)
 }
 
 // DailyStorageRate holds one day's storage rate for the yearly chart.
@@ -99,14 +94,9 @@ func Dashboard(data DamDashboardData) (*image.NRGBA, error) {
 
 	if data.Dam != nil {
 		drawStorageRate(dc, data.Dam)
-		drawHourlyDelta(dc, data.Dam.History)
-		drawDamFooter(dc, data.Dam)
 	}
 
 	drawYearlyChart(dc, data.Now, data.YearlyHistory)
-
-	drawSeparator(dc, float64(hourlyDeltaY))
-	drawSeparator(dc, float64(footerY))
 
 	return toGrayscale(dc.Image()), nil
 }

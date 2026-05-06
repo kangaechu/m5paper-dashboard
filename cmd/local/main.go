@@ -50,6 +50,7 @@ func main() {
 			fmt.Fprintf(os.Stderr, "cache save error: %v\n", err)
 		}
 	}
+	history[dam.AverageHistoryKey] = dam.AverageHistory()
 	data.YearlyHistory = history
 
 	img, err := render.Dashboard(data)

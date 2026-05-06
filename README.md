@@ -1,24 +1,24 @@
 # m5paper-dashboard
 
-M5Paper (960x540 E-Ink, 横向き) 用の宇連ダム貯水率ダッシュボード。
+M5Paper (960x540 E-Ink, 横向き) 用の荒川水系ダム貯水率ダッシュボード。
 
 Goで画像を直接生成し、AWS Lambda + S3経由でM5Paperに配信します。
 
 ## 表示内容
 
-- 宇連ダム貯水率（水資源機構中部支社リアルタイム情報）
-  - 現在の貯水率（大きく表示）
-  - 貯水位・貯水量・流入量・放流量
-  - 24時間の1時間ごと貯水量変化
-  - 年間貯水率グラフ（今年＋過去3年比較）
+- 荒川水系（関東）4ダム合計の貯水率（国土交通省関東地方整備局リアルタイム情報）
+  - 4ダム合計貯水率（大きく表示）
+  - 合計貯水量 / 有効容量
+  - 個別ダム（二瀬・滝沢・浦山・荒川貯水池）の貯水率
+  - 年間貯水率グラフ（今年＋過去年比較。過去データは実行を重ねて自動蓄積）
 
 ## アーキテクチャ
 
 ```
 EventBridge (10分間隔) → Lambda (Go) → S3 → CloudFront → M5Paper
                             │
-                     水資源機構中部支社
-                     リアルタイム情報
+                     国土交通省関東地方整備局
+                     荒川4ダム貯水状況ページ
 ```
 
 ## セットアップ
@@ -30,24 +30,16 @@ cp .env.sample .env
 # .env を編集
 ```
 
-### 2. 過去データの取得（オプション）
-
-年間グラフに過去データを表示するため、opengov.jp から過去の貯水率データを取得できます。
-
-```shell
-go run ./cmd/fetch-history --cache dam_history.json
-```
-
-2005年〜現在までの日次貯水率データがキャッシュファイルに保存されます。
-
-### 3. ローカル実行
+### 2. ローカル実行
 
 ```shell
 make run
 # output.jpg が生成される
 ```
 
-### 4. Lambda デプロイ
+実行のたびに「4ダム合計の当日貯水率」が `dam_history.json` に追記されます。年間グラフは初回時点では当日 1 点のみとなり、運用を続けるほど線が伸びていきます。
+
+### 3. Lambda デプロイ
 
 ```shell
 make build-lambda
@@ -74,7 +66,7 @@ make build-lambda
 
 | 環境変数 | 説明 | デフォルト |
 |---------|------|----------|
-| `DAM_URL` | 水資源機構データページURL | 宇連ダムのURL |
+| `DAM_URL` | 関東地方整備局 荒川4ダム貯水状況ページURL | 荒川4ダムページのURL |
 | `DAM_CACHE_FILE` | 年間データキャッシュファイルパス | `dam_history.json` |
 | `S3_BUCKET` | S3バケット名 | - |
 | `S3_OBJECT_KEY` | S3オブジェクトキー | - |
@@ -85,6 +77,5 @@ make build-lambda
 - Go 1.23+
 - [fogleman/gg](https://github.com/fogleman/gg) - 2D画像生成
 - NotoSansJP / Weather Icons / Material Design Icons - フォント（go:embed）
-- 水資源機構中部支社リアルタイム情報 - ダムデータ取得
-- [opengov.jp](https://opengov.jp/geo/dam-reservoir/ure/) - 過去データ取得
+- 国土交通省関東地方整備局 - 荒川水系ダムリアルタイム情報
 - AWS Lambda + S3 + CloudFront + EventBridge - インフラ

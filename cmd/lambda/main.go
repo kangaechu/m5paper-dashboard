@@ -45,6 +45,7 @@ func handler(ctx context.Context) error {
 			fmt.Fprintf(os.Stderr, "cache save error: %v\n", err)
 		}
 	}
+	history[dam.AverageHistoryKey] = dam.AverageHistory()
 	data.YearlyHistory = history
 
 	// Render
