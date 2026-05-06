@@ -12,27 +12,22 @@ import (
 	"github.com/kangaechu/m5paper-dashboard/internal/render"
 )
 
-const (
-	// DefaultURL is the water.go.jp real-time data page for Ure Dam.
-	DefaultURL = "https://www.water.go.jp/mizu/chubu/realtime/p020201_60/301_1.html"
+// DefaultURL is the MLIT Kanto Regional Development Bureau page that
+// publishes the current storage status of the four Arakawa river system
+// dams (Futase, Takizawa, Urayama, Arakawa Reservoir).
+const DefaultURL = "https://www.ktr.mlit.go.jp/river/shihon/river_shihon00000113.html"
 
-	// Ure Dam constants
-	EffectiveCapacity = 28420.0 // 有効貯水容量 (×10³m³)
-	NormalWaterLevel  = 229.15  // 常時満水位 (EL.m)
-	MinWaterLevel     = 178.85  // 最低水位 (EL.m)
+// damNames are the individual dam labels expected in the table.
+var damNames = []string{"二瀬ダム", "滝沢ダム", "浦山ダム", "荒川貯水池"}
+
+var (
+	tdRegexp         = regexp.MustCompile(`<td[^>]*>([\s\S]*?)</td>`)
+	tagRegexp        = regexp.MustCompile(`<[^>]+>`)
+	commentRegexp    = regexp.MustCompile(`<!--[\s\S]*?-->`)
+	whitespaceRegexp = regexp.MustCompile(`\s+`)
+	numberRegexp     = regexp.MustCompile(`-?[\d,]+(?:\.\d+)?`)
+	observedAtRegexp = regexp.MustCompile(`令和\s*(\d+)\s*年\s*(\d+)\s*月\s*(\d+)\s*日\s*(\d+)\s*時現在`)
 )
-
-// tdRegexp extracts content from a <td> tag.
-var tdRegexp = regexp.MustCompile(`<td[^>]*>(.*?)</td>`)
-
-// timeWithDateRegexp matches "MM/DD HH:MM"
-var timeWithDateRegexp = regexp.MustCompile(`(\d{2}/\d{2})\s+(\d{2}:\d{2})`)
-
-// timeOnlyRegexp matches "HH:MM" alone
-var timeOnlyRegexp = regexp.MustCompile(`^(\d{2}:\d{2})$`)
-
-// commentRegexp matches HTML comments like <!---->
-var commentRegexp = regexp.MustCompile(`<!--.*?-->`)
 
 // Fetch retrieves current dam data from the given URL.
 func Fetch(url string, now time.Time) (*render.DamData, error) {
@@ -57,108 +52,110 @@ func Fetch(url string, now time.Time) (*render.DamData, error) {
 }
 
 func parseHTML(html string, now time.Time) (*render.DamData, error) {
-	year := now.Year()
-	loc := now.Location()
+	observedAt, err := parseObservedAt(html, now.Location())
+	if err != nil {
+		return nil, err
+	}
 
-	// Split by <tr to process each row
 	rows := strings.Split(html, "<tr")
 
-	var history []render.DamObservation
-	var currentDate string // tracks MM/DD across rows
+	var reservoirs []render.DamReservoir
+	var total *render.DamReservoir
 
 	for _, row := range rows {
-		// Extract all <td> cells from this row
 		cells := tdRegexp.FindAllStringSubmatch(row, -1)
-		if len(cells) < 7 {
+		if len(cells) < 4 {
 			continue
 		}
 
-		// First cell should be the time cell
-		timeCell := cleanCell(cells[0][1])
-		if timeCell == "" {
+		name := cleanCell(cells[0][1])
+		if name == "" {
 			continue
 		}
 
-		var datePart, timePart string
+		isDam := isDamRow(name)
+		isTotal := !isDam && isTotalRow(name)
+		if !isDam && !isTotal {
+			continue
+		}
 
-		if m := timeWithDateRegexp.FindStringSubmatch(timeCell); len(m) == 3 {
-			datePart = m[1]
-			timePart = m[2]
-			currentDate = datePart
-		} else if m := timeOnlyRegexp.FindStringSubmatch(timeCell); len(m) == 2 {
-			timePart = m[1]
-			datePart = currentDate
+		r := render.DamReservoir{
+			Name:              name,
+			EffectiveCapacity: parseFloat(cleanCell(cells[1][1])),
+			Storage:           parseFloat(cleanCell(cells[2][1])),
+			StorageRate:       parseFloat(cleanCell(cells[3][1])),
+		}
+		if r.EffectiveCapacity == 0 && r.Storage == 0 {
+			continue
+		}
+
+		if isDam {
+			reservoirs = append(reservoirs, r)
 		} else {
-			continue
+			cp := r
+			cp.Name = "4ダム合計"
+			total = &cp
 		}
-
-		if datePart == "" || timePart == "" {
-			continue
-		}
-
-		t, err := time.ParseInLocation("2006/01/02 15:04",
-			fmt.Sprintf("%d/%s %s", year, datePart, timePart), loc)
-		if err != nil {
-			continue
-		}
-		// Handle year boundary
-		if t.After(now.Add(24 * time.Hour)) {
-			t = t.AddDate(-1, 0, 0)
-		}
-
-		// cells[1] = 貯水位, cells[2] = 有効貯水量
-		// cells[3], cells[4] = empty
-		// cells[5] = 流入量, cells[6] = 放流量(利水)
-		waterLevel := parseFloat(cleanCell(cells[1][1]))
-		storage := parseFloat(cleanCell(cells[2][1]))
-		inflow := parseFloat(cleanCell(cells[5][1]))
-		outflow := parseFloat(cleanCell(cells[6][1]))
-
-		if waterLevel == 0 && storage == 0 {
-			continue
-		}
-
-		history = append(history, render.DamObservation{
-			Time:             t,
-			WaterLevel:       waterLevel,
-			EffectiveStorage: storage,
-			Inflow:           inflow,
-			Outflow:          outflow,
-		})
 	}
 
-	if len(history) == 0 {
-		return nil, fmt.Errorf("no valid dam observations parsed")
+	if total == nil {
+		return nil, fmt.Errorf("4ダム合計 row not found")
 	}
-
-	// The last row is the most recent observation (data is chronological)
-	latest := history[len(history)-1]
-	storageRate := latest.EffectiveStorage / EffectiveCapacity * 100
-
-	// Reverse history so newest is first
-	for i, j := 0, len(history)-1; i < j; i, j = i+1, j-1 {
-		history[i], history[j] = history[j], history[i]
+	if len(reservoirs) == 0 {
+		return nil, fmt.Errorf("no individual dam rows found")
 	}
 
 	return &render.DamData{
-		Name:             "宇連ダム",
-		ObservedAt:       latest.Time,
-		WaterLevel:       latest.WaterLevel,
-		EffectiveStorage: latest.EffectiveStorage,
-		StorageRate:      storageRate,
-		Inflow:           latest.Inflow,
-		Outflow:          latest.Outflow,
-		History:          history,
+		SystemName:  "荒川水系",
+		ObservedAt:  observedAt,
+		Total:       *total,
+		Reservoirs:  reservoirs,
+		StorageRate: total.StorageRate,
 	}, nil
+}
+
+func isDamRow(name string) bool {
+	for _, n := range damNames {
+		if strings.Contains(name, n) {
+			return true
+		}
+	}
+	return false
+}
+
+func isTotalRow(name string) bool {
+	return strings.Contains(name, "合計")
+}
+
+func parseObservedAt(html string, loc *time.Location) (time.Time, error) {
+	stripped := tagRegexp.ReplaceAllString(html, "")
+	stripped = strings.ReplaceAll(stripped, "&nbsp;", " ")
+	m := observedAtRegexp.FindStringSubmatch(stripped)
+	if len(m) != 5 {
+		return time.Time{}, fmt.Errorf("observed-at timestamp not found")
+	}
+	reiwa, _ := strconv.Atoi(m[1])
+	month, _ := strconv.Atoi(m[2])
+	day, _ := strconv.Atoi(m[3])
+	hour, _ := strconv.Atoi(m[4])
+	year := 2018 + reiwa
+	return time.Date(year, time.Month(month), day, hour, 0, 0, 0, loc), nil
 }
 
 func cleanCell(s string) string {
 	s = commentRegexp.ReplaceAllString(s, "")
-	s = strings.TrimSpace(s)
-	return s
+	s = tagRegexp.ReplaceAllString(s, "")
+	s = strings.ReplaceAll(s, "&nbsp;", " ")
+	s = whitespaceRegexp.ReplaceAllString(s, " ")
+	return strings.TrimSpace(s)
 }
 
 func parseFloat(s string) float64 {
-	v, _ := strconv.ParseFloat(s, 64)
+	m := numberRegexp.FindString(s)
+	if m == "" {
+		return 0
+	}
+	m = strings.ReplaceAll(m, ",", "")
+	v, _ := strconv.ParseFloat(m, 64)
 	return v
 }
