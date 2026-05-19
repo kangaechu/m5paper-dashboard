@@ -8,7 +8,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.32.17
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.101.0
 	github.com/fogleman/gg v1.3.0
-	golang.org/x/image v0.39.0
+	golang.org/x/image v0.40.0
 )
 
 require (
@@ -29,5 +29,5 @@ require (
 	github.com/aws/smithy-go v1.25.1 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/stretchr/testify v1.11.1 // indirect
-	golang.org/x/text v0.36.0 // indirect
+	golang.org/x/text v0.37.0 // indirect
 )
