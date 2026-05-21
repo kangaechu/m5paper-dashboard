@@ -14,9 +14,9 @@ import (
 
 // DamDashboardData holds all data needed to render the dam dashboard.
 type DamDashboardData struct {
-	Now           time.Time
-	Dam           *DamData
-	YearlyHistory map[string][]DailyStorageRate // key: "2026", "2025", ...
+	Now        time.Time
+	Dam        *DamData
+	GraphImage image.Image // yearly storage chart fetched from the source page
 }
 
 // DamData holds current dam observation data for the entire river system.
@@ -34,12 +34,6 @@ type DamReservoir struct {
 	EffectiveCapacity float64 // 有効容量 (万m³)
 	Storage           float64 // 貯水量 (万m³)
 	StorageRate       float64 // 貯水率 (%)
-}
-
-// DailyStorageRate holds one day's storage rate for the yearly chart.
-type DailyStorageRate struct {
-	Date        string  `json:"date"`         // "2026-01-15"
-	StorageRate float64 `json:"storage_rate"` // percentage
 }
 
 var fontRegular *opentype.Font
@@ -96,7 +90,9 @@ func Dashboard(data DamDashboardData) (*image.NRGBA, error) {
 		drawStorageRate(dc, data.Dam)
 	}
 
-	drawYearlyChart(dc, data.Now, data.YearlyHistory)
+	if data.GraphImage != nil {
+		drawGraphImage(dc, data.GraphImage)
+	}
 
 	return toGrayscale(dc.Image()), nil
 }
