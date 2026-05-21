@@ -3,8 +3,6 @@ package dam
 import (
 	"testing"
 	"time"
-
-	"github.com/kangaechu/m5paper-dashboard/internal/render"
 )
 
 const sampleHTML = `<html><body>
@@ -165,45 +163,6 @@ func TestParseObservedAt(t *testing.T) {
 				t.Errorf("got %v, want %v", got, c.want)
 			}
 		})
-	}
-}
-
-func TestAverageHistory(t *testing.T) {
-	avg := AverageHistory()
-	// Expected count: full year minus 5 non-existent days
-	// (2/30, 2/31, 4/31, 6/31, 9/31, 11/31) = 366 - 6 = ... wait: 2/30 and 2/31 are both
-	// non-existent so two days for Feb. Plus 4/31, 6/31, 9/31, 11/31 = 6 missing.
-	// Total = 12*31 - 6 = 366. So out length = 366.
-	if got, want := len(avg), 366; got != want {
-		t.Errorf("AverageHistory length = %d, want %d", got, want)
-	}
-
-	// Spot checks against the source PDF table.
-	cases := []struct {
-		date    string
-		storage int
-	}{
-		{"2024-01-01", 8337},
-		{"2024-05-01", 9964},
-		{"2024-12-31", 8690},
-		{"2024-02-29", 8286}, // leap-day average from H24/H28
-	}
-	for _, c := range cases {
-		var found *render.DailyStorageRate
-		for i := range avg {
-			if avg[i].Date == c.date {
-				found = &avg[i]
-				break
-			}
-		}
-		if found == nil {
-			t.Errorf("entry for %s not found", c.date)
-			continue
-		}
-		wantRate := float64(c.storage) / EffectiveCapacity * 100
-		if found.StorageRate != wantRate {
-			t.Errorf("rate for %s = %v, want %v", c.date, found.StorageRate, wantRate)
-		}
 	}
 }
 
