@@ -8,7 +8,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.32.17
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.101.0
 	github.com/fogleman/gg v1.3.0
-	golang.org/x/image v0.40.0
+	golang.org/x/image v0.41.0
 )
 
 require (
