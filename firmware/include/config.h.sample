@@ -4,8 +4,8 @@
 #define WIFI_SSID     "YOUR_WIFI_SSID"
 #define WIFI_PASSWORD "YOUR_WIFI_PASSWORD"
 
-// Dashboard image URL (CloudFront or S3)
-#define IMAGE_URL     "https://your-cloudfront-domain.cloudfront.net/your-key/dashboard.jpg"
+// Dashboard image URL (Cloudflare R2 public bucket)
+#define IMAGE_URL     "https://pub-xxxxxxxxxxxxxxxx.r2.dev/dashboard.jpg"
 
 // Sleep interval in minutes
 #define SLEEP_MINUTES 60
