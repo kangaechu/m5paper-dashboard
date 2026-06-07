@@ -1,8 +1,14 @@
+# m5paper-dashboard
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: m5paper-dashboard
+---
 apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: m5paper-dashboard
-  namespace: default
+  namespace: m5paper-dashboard
 spec:
   schedule: "*/10 * * * *"  # every 10 minutes
   concurrencyPolicy: Replace
@@ -14,18 +20,47 @@ spec:
       activeDeadlineSeconds: 120
       template:
         spec:
-          restartPolicy: Never
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            fsGroup: 1000
           containers:
-            - name: dashboard
-              image: ghcr.io/kangaechu/m5paper-dashboard:latest
-              command: ["/app/m5paper-dashboard", "--output", "/data/dashboard.jpg"]
-              envFrom:
-                - configMapRef:
-                    name: m5paper-dashboard
-              volumeMounts:
-                - name: data
-                  mountPath: /data
-          volumes:
+          - name: dashboard
+            image: m5paper-dashboard:latest
+            imagePullPolicy: Never
+            securityContext:
+              allowPrivilegeEscalation: false
+              capabilities:
+                drop: ["ALL"]
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                memory: 512Mi
+            env:
+            - name: DAM_CACHE_FILE
+              value: /data/dam_history.json
+            - name: TZ
+              value: Asia/Tokyo
+            - name: OUTPUT_DIR
+              value: /data/public
+            - name: SYNC_CLOUD_STORAGE
+              value: 'true'
+            - name: RCLONE_DESTINATION
+              value: 'm5paper-dashboard:m5paper-dashboard'
+            - name: RCLONE_CONFIG
+              valueFrom:
+                secretKeyRef:
+                  name: m5paper-dashboard
+                  key: rclone_config
+            volumeMounts:
             - name: data
-              persistentVolumeClaim:
-                claimName: m5paper-dashboard
+              mountPath: /data
+          restartPolicy: OnFailure
+          volumes:
+          - name: data
+            hostPath:
+              path: /srv/kube/m5paper-dashboard/data/
+              type: DirectoryOrCreate
