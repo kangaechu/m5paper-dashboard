@@ -86,12 +86,13 @@ func Dashboard(data DamDashboardData) (*image.NRGBA, error) {
 	drawDamHeader(dc, data.Now, data.Dam)
 	drawSeparator(dc, float64(mainY))
 
-	if data.Dam != nil {
-		drawStorageRate(dc, data.Dam)
-	}
-
+	// Draw the chart first so the storage rate can be overlaid on top of it.
 	if data.GraphImage != nil {
 		drawGraphImage(dc, data.GraphImage)
+	}
+
+	if data.Dam != nil {
+		drawStorageRateOverlay(dc, data.Dam)
 	}
 
 	return toGrayscale(dc.Image()), nil

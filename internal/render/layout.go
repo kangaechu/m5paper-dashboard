@@ -12,12 +12,9 @@ const (
 	headerY      = 0
 	headerHeight = 40
 
-	// Main section (left: storage rate, right: yearly chart)
+	// Main section (full-width yearly chart with overlaid storage rate)
 	mainY      = headerHeight
 	mainHeight = Height - headerHeight
-	leftWidth  = 320
-	rightX     = leftWidth
-	rightWidth = Width - leftWidth
 
 	// Separator
 	separatorGray = 0.7
