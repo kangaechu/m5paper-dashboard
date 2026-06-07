@@ -41,49 +41,59 @@ func drawDamHeader(dc *gg.Context, now time.Time, dam *DamData) {
 	}
 }
 
-func drawStorageRate(dc *gg.Context, dam *DamData) {
-	centerX := float64(leftWidth) / 2
-	baseY := float64(mainY)
-
-	// "4ダム合計貯水率" label
-	dc.SetRGB(0, 0, 0)
-	face := fontFace(fontRegular, 20)
-	dc.SetFontFace(face)
-	dc.DrawStringAnchored("4ダム合計貯水率", centerX, centeredBaselineY(face, baseY+50), 0.5, 0)
-
-	// Large percentage number
+// drawStorageRateOverlay draws the total storage rate as a compact card
+// overlaid on the bottom-right corner of the chart. The card has an opaque
+// white background so the figures stay legible over the graph.
+func drawStorageRateOverlay(dc *gg.Context, dam *DamData) {
 	rateStr := fmt.Sprintf("%.0f%%", dam.StorageRate)
-	faceLarge := fontFace(fontRegular, 100)
-	dc.SetFontFace(faceLarge)
-	dc.DrawStringAnchored(rateStr, centerX, centeredBaselineY(faceLarge, baseY+150), 0.5, 0)
-
-	// Storage volume below
-	face3 := fontFace(fontRegular, 14)
-	dc.SetFontFace(face3)
-	dc.SetRGB(0.3, 0.3, 0.3)
 	volStr := fmt.Sprintf("%s / %s 万m³",
 		formatThousands(dam.Total.Storage),
 		formatThousands(dam.Total.EffectiveCapacity))
-	dc.DrawStringAnchored(volStr, centerX, centeredBaselineY(face3, baseY+220), 0.5, 0)
 
-	// Per-dam mini list
-	if len(dam.Reservoirs) > 0 {
-		listFace := fontFace(fontRegular, 14)
-		dc.SetFontFace(listFace)
-		dc.SetRGB(0.2, 0.2, 0.2)
+	faceRate := fontFace(fontRegular, 48)
+	faceVol := fontFace(fontRegular, 12)
 
-		lineHeight := 22.0
-		listTop := baseY + 260
-		nameX := float64(marginX) + 20
-		rateX := float64(leftWidth) - 20
+	dc.SetFontFace(faceRate)
+	rateW, _ := dc.MeasureString(rateStr)
+	dc.SetFontFace(faceVol)
+	volW, _ := dc.MeasureString(volStr)
 
-		for i, r := range dam.Reservoirs {
-			y := listTop + float64(i)*lineHeight
-			bl := centeredBaselineY(listFace, y)
-			dc.DrawStringAnchored(r.Name, nameX, bl, 0, 0)
-			dc.DrawStringAnchored(fmt.Sprintf("%.0f%%", r.StorageRate), rateX, bl, 1, 0)
-		}
-	}
+	rateH := float64(faceRate.Metrics().Height) / 64
+	volH := float64(faceVol.Metrics().Height) / 64
+
+	const (
+		pad = 12.0
+		gap = 2.0
+	)
+	boxW := math.Max(rateW, volW) + pad*2
+	boxH := rateH + volH + gap + pad*2
+
+	boxRight := float64(Width - marginX)
+	boxBottom := float64(Height - marginX)
+	boxLeft := boxRight - boxW
+	boxTop := boxBottom - boxH
+	centerX := boxLeft + boxW/2
+
+	// Opaque white card with a light border.
+	dc.SetRGB(1, 1, 1)
+	dc.DrawRoundedRectangle(boxLeft, boxTop, boxW, boxH, 10)
+	dc.Fill()
+	dc.SetRGB(separatorGray, separatorGray, separatorGray)
+	dc.SetLineWidth(1.5)
+	dc.DrawRoundedRectangle(boxLeft, boxTop, boxW, boxH, 10)
+	dc.Stroke()
+
+	// Large percentage number
+	dc.SetRGB(0, 0, 0)
+	dc.SetFontFace(faceRate)
+	rateCY := boxTop + pad + rateH/2
+	dc.DrawStringAnchored(rateStr, centerX, centeredBaselineY(faceRate, rateCY), 0.5, 0)
+
+	// Storage volume
+	dc.SetRGB(0.3, 0.3, 0.3)
+	dc.SetFontFace(faceVol)
+	volCY := boxTop + pad + rateH + gap + volH/2
+	dc.DrawStringAnchored(volStr, centerX, centeredBaselineY(faceVol, volCY), 0.5, 0)
 }
 
 // formatThousands renders an integer-valued float with comma thousands separators.
@@ -109,13 +119,13 @@ func formatThousands(v float64) string {
 }
 
 // drawGraphImage renders the yearly storage chart PNG (fetched from the
-// source page) into the right-hand area of the dashboard, scaled to fit
+// source page) across the full main area of the dashboard, scaled to fit
 // while preserving aspect ratio, with a small caption underneath.
 func drawGraphImage(dc *gg.Context, img image.Image) {
-	areaLeft := float64(rightX) + 6
+	areaLeft := float64(marginX)
 	areaRight := float64(Width - marginX)
 	areaTop := float64(mainY) + 4
-	areaBottom := float64(Height) - 18
+	areaBottom := float64(Height) - 4
 
 	areaW := areaRight - areaLeft
 	areaH := areaBottom - areaTop
@@ -136,10 +146,4 @@ func drawGraphImage(dc *gg.Context, img image.Image) {
 	dst := image.NewNRGBA(image.Rect(0, 0, dstW, dstH))
 	draw.CatmullRom.Scale(dst, dst.Bounds(), img, srcB, draw.Over, nil)
 	dc.DrawImage(dst, dstX, dstY)
-
-	// Source attribution caption
-	face := fontFace(fontRegular, 11)
-	dc.SetFontFace(face)
-	dc.SetRGB(0.4, 0.4, 0.4)
-	dc.DrawStringAnchored("出典: 東京都水道局", areaRight, centeredBaselineY(face, areaBottom+9), 1, 0)
 }
