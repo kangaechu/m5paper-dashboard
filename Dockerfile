@@ -2,7 +2,7 @@ FROM docker.io/library/busybox:1.38-uclibc AS busybox
 
 FROM docker.io/rclone/rclone:1 AS rclone
 
-FROM golang:1.26.5-trixie AS builder
+FROM golang:1.27rc2-trixie AS builder
 WORKDIR /build
 COPY go.mod go.sum ./
 RUN go mod download
