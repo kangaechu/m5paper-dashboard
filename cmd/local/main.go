@@ -21,7 +21,7 @@ func main() {
 	output := flag.String("output", "output.jpg", "output JPEG file path (white background)")
 	outputDark := flag.String("output-dark", "", "output JPEG file path (dark background); derived from --output if empty")
 	damURL := flag.String("dam-url", envOrDefault("DAM_URL", dam.DefaultURL), "dam data URL")
-	graphURL := flag.String("graph-url", envOrDefault("DAM_GRAPH_URL", dam.DefaultGraphURL), "dam storage graph image URL")
+	cacheFile := flag.String("cache", envOrDefault("DAM_CACHE_FILE", "dam_history.json"), "dam history cache file path")
 	flag.Parse()
 
 	loc, _ := time.LoadLocation("Asia/Tokyo")
@@ -37,13 +37,20 @@ func main() {
 		data.Dam = d
 	}
 
-	// Fetch storage chart image
-	g, err := dam.FetchGraph(*graphURL)
+	// Load and update history cache
+	history, err := dam.LoadHistory(*cacheFile)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "graph error: %v\n", err)
-	} else {
-		data.GraphImage = g
+		fmt.Fprintf(os.Stderr, "cache load error: %v\n", err)
+		history = make(map[string][]render.DailyStorageRate)
 	}
+
+	if data.Dam != nil {
+		dam.UpdateHistory(history, now, data.Dam.StorageRate)
+		if err := dam.SaveHistory(*cacheFile, history); err != nil {
+			fmt.Fprintf(os.Stderr, "cache save error: %v\n", err)
+		}
+	}
+	data.YearlyHistory = history
 
 	img, err := render.Dashboard(data)
 	if err != nil {

@@ -22,7 +22,7 @@ func handler(ctx context.Context) error {
 	data := render.DamDashboardData{Now: now}
 
 	damURL := envOrDefault("DAM_URL", dam.DefaultURL)
-	graphURL := envOrDefault("DAM_GRAPH_URL", dam.DefaultGraphURL)
+	cacheFile := envOrDefault("DAM_CACHE_FILE", "/tmp/dam_history.json")
 
 	// Fetch dam data
 	d, err := dam.Fetch(damURL, now)
@@ -32,13 +32,20 @@ func handler(ctx context.Context) error {
 		data.Dam = d
 	}
 
-	// Fetch storage chart image
-	g, err := dam.FetchGraph(graphURL)
+	// Load and update history cache
+	history, err := dam.LoadHistory(cacheFile)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "graph error: %v\n", err)
-	} else {
-		data.GraphImage = g
+		fmt.Fprintf(os.Stderr, "cache load error: %v\n", err)
+		history = make(map[string][]render.DailyStorageRate)
 	}
+
+	if data.Dam != nil {
+		dam.UpdateHistory(history, now, data.Dam.StorageRate)
+		if err := dam.SaveHistory(cacheFile, history); err != nil {
+			fmt.Fprintf(os.Stderr, "cache save error: %v\n", err)
+		}
+	}
+	data.YearlyHistory = history
 
 	// Render
 	img, err := render.Dashboard(data)
