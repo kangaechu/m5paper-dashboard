@@ -14,26 +14,37 @@ import (
 
 // DamDashboardData holds all data needed to render the dam dashboard.
 type DamDashboardData struct {
-	Now        time.Time
-	Dam        *DamData
-	GraphImage image.Image // yearly storage chart fetched from the source page
+	Now           time.Time
+	Dam           *DamData
+	YearlyHistory map[string][]DailyStorageRate // key: "2026", "2025", ...
 }
 
-// DamData holds current dam observation data for the entire river system.
+// DamData holds current dam observation data.
 type DamData struct {
-	SystemName  string         // e.g. "荒川水系"
-	ObservedAt  time.Time      // observation timestamp from the source page
-	Total       DamReservoir   // aggregated total of all reservoirs
-	Reservoirs  []DamReservoir // individual reservoirs (display order)
-	StorageRate float64        // shortcut for Total.StorageRate
+	Name             string
+	ObservedAt       time.Time
+	WaterLevel       float64 // 貯水位 (EL.m)
+	EffectiveStorage float64 // 有効貯水量 (×10³m³)
+	StorageRate      float64 // 貯水率 (%)
+	Inflow           float64 // 流入量 (m³/s)
+	Outflow          float64 // 放流量 (m³/s)
+	Rainfall         float64 // ダム地点雨量 (mm/h)
+	History          []DamObservation
 }
 
-// DamReservoir holds the headline figures for one dam (or the system total).
-type DamReservoir struct {
-	Name              string
-	EffectiveCapacity float64 // 有効容量 (万m³)
-	Storage           float64 // 貯水量 (万m³)
-	StorageRate       float64 // 貯水率 (%)
+// DamObservation holds one hourly observation.
+type DamObservation struct {
+	Time             time.Time
+	WaterLevel       float64
+	EffectiveStorage float64
+	Inflow           float64
+	Outflow          float64
+}
+
+// DailyStorageRate holds one day's storage rate for the yearly chart.
+type DailyStorageRate struct {
+	Date        string  `json:"date"`         // "2026-01-15"
+	StorageRate float64 `json:"storage_rate"` // percentage
 }
 
 var fontRegular *opentype.Font
@@ -86,14 +97,16 @@ func Dashboard(data DamDashboardData) (*image.NRGBA, error) {
 	drawDamHeader(dc, data.Now, data.Dam)
 	drawSeparator(dc, float64(mainY))
 
-	// Draw the chart first so the storage rate can be overlaid on top of it.
-	if data.GraphImage != nil {
-		drawGraphImage(dc, data.GraphImage)
+	if data.Dam != nil {
+		drawStorageRate(dc, data.Dam)
+		drawHourlyDelta(dc, data.Dam.History)
+		drawDamFooter(dc, data.Dam)
 	}
 
-	if data.Dam != nil {
-		drawStorageRateOverlay(dc, data.Dam)
-	}
+	drawYearlyChart(dc, data.Now, data.YearlyHistory)
+
+	drawSeparator(dc, float64(hourlyDeltaY))
+	drawSeparator(dc, float64(footerY))
 
 	return toGrayscale(dc.Image()), nil
 }

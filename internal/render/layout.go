@@ -12,9 +12,20 @@ const (
 	headerY      = 0
 	headerHeight = 40
 
-	// Main section (full-width yearly chart with overlaid storage rate)
+	// Main section (left: storage rate, right: yearly chart)
 	mainY      = headerHeight
-	mainHeight = Height - headerHeight
+	mainHeight = 280
+	leftWidth  = 320 // left panel for storage rate
+	rightX     = leftWidth
+	rightWidth = Width - leftWidth
+
+	// Hourly delta section
+	hourlyDeltaY      = mainY + mainHeight
+	hourlyDeltaHeight = 180
+
+	// Footer (stats summary)
+	footerY      = hourlyDeltaY + hourlyDeltaHeight
+	footerHeight = Height - footerY
 
 	// Separator
 	separatorGray = 0.7
