@@ -82,7 +82,7 @@ make build-lambda
 
 ## 技術スタック
 
-- Go 1.23+
+- Go 1.27+
 - [fogleman/gg](https://github.com/fogleman/gg) - 2D画像生成
 - NotoSansJP / Weather Icons / Material Design Icons - フォント（go:embed）
 - 水資源機構中部支社リアルタイム情報 - ダムデータ取得
