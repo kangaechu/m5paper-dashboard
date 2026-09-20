@@ -4,6 +4,10 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    groups:
+      aws:
+        patterns:
+          - "github.com/aws/*"
   - package-ecosystem: "docker"
     directory: "/"
     schedule:
